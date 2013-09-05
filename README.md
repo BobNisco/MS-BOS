@@ -1,5 +1,6 @@
-AlanBBOS2013
+MS-BOS (MS-Bob's Operating System)
 ============
 
-This is my Fall 2013 Operating Systems class initial project.
-See http://www.labouseur.com/courses/os/ for details.
+Fall 2013 Operating Systems project.
+
+See [http://www.labouseur.com/courses/os/]() for details. Forked from [https://github.com/labouseur/AlanBBOS2013]()
