@@ -92,6 +92,26 @@ function shellInit() {
     }
     this.commandList[this.commandList.length] = sc;
 
+    // whereami
+    sc = new ShellCommand();
+    sc.command = "whereami";
+    sc.description = "- Displays your current location";
+    sc.function = function() {
+        // Check to see that browser supports geolocation
+        if (navigator.geolocation) {
+            _StdIn.putText("Getting your geolocation. Please note that if nothing appears," +
+                " it may be because of your browser/settings.");
+            _StdIn.advanceLine();
+            navigator.geolocation.getCurrentPosition(function(position) {
+                _StdIn.putText("Lat: " + position.coords.latitude + " Long: " +
+                    position.coords.longitude);
+            });
+        } else {
+            _StdIn.putText("You're probably in your parent's basement.");
+        }
+    }
+    this.commandList[this.commandList.length] = sc;
+
     // processes - list the running processes and their IDs
     // kill <id> - kills the specified process id.
 
