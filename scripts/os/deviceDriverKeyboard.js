@@ -46,10 +46,11 @@ function krnKbdDispatchKeyPress(params)
         }
         // TODO: Check for caps-lock and handle as shifted if so.
         _KernelInputQueue.enqueue(chr);
+    } else if ((keyCode >= 48) && (keyCode <= 57)) {
+        _KernelInputQueue.enqueue(handleNumberChar(keyCode, isShifted));
     }
-    else if ( ((keyCode >= 48) && (keyCode <= 57)) ||   // digits
-               (keyCode == 32)                     ||   // space
-               (keyCode == 13) )                        // enter
+    else if ((keyCode == 32)                     ||   // space
+             (keyCode == 13) )                        // enter
     {
         chr = String.fromCharCode(keyCode);
         _KernelInputQueue.enqueue(chr);
@@ -96,6 +97,26 @@ function handlePunctuationChar(keyCode, isShifted) {
         '222' : '\"'
     };
     chr = lookupTable[keyCode];
+    if (isShifted) {
+        chr = lookupTableShifted[keyCode];
+    }
+    return chr;
+}
+
+function handleNumberChar(keyCode, isShifted) {
+    var lookupTableShifted = {
+        '48' : ')',
+        '49' : '!',
+        '50' : '@',
+        '51' : '#',
+        '52' : '$',
+        '53' : '%',
+        '54' : '^',
+        '55' : '&',
+        '56' : '*',
+        '57' : '('
+    };
+    chr = String.fromCharCode(keyCode);
     if (isShifted) {
         chr = lookupTableShifted[keyCode];
     }
