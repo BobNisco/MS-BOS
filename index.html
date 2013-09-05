@@ -2,14 +2,14 @@
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-   <meta name="author"             content="Alan G. Labouseur" />
+   <meta name="author"             content="Bob Nisco" />
    <link rel="stylesheet" href="alanbbos.css" type="text/css" media="screen" />
    <title>
-      AlanBBOS - a Browser-based virtual Operating System
+      MS-BOS
    </title>
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
-   <script type="text/javascript" src="globals.js"></script>	
+   <script type="text/javascript" src="globals.js"></script>
 
    <!-- Host (Hardware Simulation) Routines -->
    <script type="text/javascript" src="scripts/host/control.js"></script>
@@ -18,8 +18,8 @@
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="scripts/os/interrupt.js"></script>
-   <script type="text/javascript" src="scripts/os/canvastext.js"></script>	
-   <script type="text/javascript" src="scripts/os/console.js"></script>	
+   <script type="text/javascript" src="scripts/os/canvastext.js"></script>
+   <script type="text/javascript" src="scripts/os/console.js"></script>
    <script type="text/javascript" src="scripts/os/deviceDriver.js"></script>
    <script type="text/javascript" src="scripts/os/deviceDriverKeyboard.js"></script>
    <script type="text/javascript" src="scripts/os/queue.js"></script>
@@ -65,8 +65,8 @@
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
       <canvas id="display"
-              width="500px"
-              height="500px"
+              width="500"
+              height="500"
               tabindex="3">
       </canvas>
    </div>
