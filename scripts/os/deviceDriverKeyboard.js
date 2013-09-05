@@ -56,6 +56,10 @@ function krnKbdDispatchKeyPress(params)
         _KernelInputQueue.enqueue(chr);
     } else if (isPunctuationChar(keyCode)) {
         _KernelInputQueue.enqueue(handlePunctuationChar(keyCode, isShifted));
+    } else if (keyCode == 8) {
+        // Trim the buffer
+        _Console.buffer = _Console.buffer.substring(0, _Console.buffer.length - 1);
+        // TODO: Update the display of the console
     }
 }
 
