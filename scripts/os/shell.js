@@ -1,6 +1,6 @@
 /* ------------
    Shell.js
-   
+
    The OS Shell - The "command line interface" (CLI) for the console.
    ------------ */
 
@@ -30,14 +30,14 @@ function shellInit() {
     sc.description = "- Displays the current version data.";
     sc.function = shellVer;
     this.commandList[this.commandList.length] = sc;
-    
+
     // help
     sc = new ShellCommand();
     sc.command = "help";
     sc.description = "- This is the help command. Seek help.";
     sc.function = shellHelp;
     this.commandList[this.commandList.length] = sc;
-    
+
     // shutdown
     sc = new ShellCommand();
     sc.command = "shutdown";
@@ -58,7 +58,7 @@ function shellInit() {
     sc.description = "<topic> - Displays the MANual page for <topic>.";
     sc.function = shellMan;
     this.commandList[this.commandList.length] = sc;
-    
+
     // trace <on | off>
     sc = new ShellCommand();
     sc.command = "trace";
@@ -80,6 +80,18 @@ function shellInit() {
     sc.function = shellPrompt;
     this.commandList[this.commandList.length] = sc;
 
+    // date
+    sc = new ShellCommand();
+    sc.command = "date";
+    sc.description = "- Displays the current date and time."
+    sc.function = function() {
+        var currentDateTime = new Date();
+        _StdIn.putText(currentDateTime.getHours() + ":" + currentDateTime.getMinutes() +
+            " " + currentDateTime.getMonth() + "/" + currentDateTime.getDate() + "/"
+            + currentDateTime.getFullYear());
+    }
+    this.commandList[this.commandList.length] = sc;
+
     // processes - list the running processes and their IDs
     // kill <id> - kills the specified process id.
 
@@ -96,7 +108,7 @@ function shellPutPrompt()
 function shellHandleInput(buffer)
 {
     krnTrace("Shell Command~" + buffer);
-    // 
+    //
     // Parse the input...
     //
     var userCommand = new UserCommand();
@@ -194,7 +206,7 @@ function shellExecute(fn, args)
 
 
 //
-// The rest of these functions ARE NOT part of the Shell "class" (prototype, more accurately), 
+// The rest of these functions ARE NOT part of the Shell "class" (prototype, more accurately),
 // as they are not denoted in the constructor.  The idea is that you cannot execute them from
 // elsewhere as shell.xxx .  In a better world, and a more perfect JavaScript, we'd be
 // able to make then private.  (Actually, we can. have a look at Crockford's stuff and Resig's JavaScript Ninja cook.)
@@ -203,7 +215,7 @@ function shellExecute(fn, args)
 //
 // An "interior" or "private" class (prototype) used only inside Shell() (we hope).
 //
-function ShellCommand()     
+function ShellCommand()
 {
     // Properties
     this.command = "";
@@ -258,7 +270,7 @@ function shellApology()
 
 function shellVer(args)
 {
-    _StdIn.putText(APP_NAME + " version " + APP_VERSION);    
+    _StdIn.putText(APP_NAME + " version " + APP_VERSION);
 }
 
 function shellHelp(args)
@@ -268,14 +280,14 @@ function shellHelp(args)
     {
         _StdIn.advanceLine();
         _StdIn.putText("  " + _OsShell.commandList[i].command + " " + _OsShell.commandList[i].description);
-    }    
+    }
 }
 
 function shellShutdown(args)
 {
      _StdIn.putText("Shutting down...");
      // Call Kernel shutdown routine.
-    krnShutdown();   
+    krnShutdown();
     // TODO: Stop the final prompt from being displayed.  If possible.  Not a high priority.  (Damn OCD!)
 }
 
@@ -292,12 +304,12 @@ function shellMan(args)
         var topic = args[0];
         switch (topic)
         {
-            case "help": 
+            case "help":
                 _StdIn.putText("Help displays a list of (hopefully) valid commands.");
                 break;
             default:
                 _StdIn.putText("No manual entry for " + args[0] + ".");
-        }        
+        }
     }
     else
     {
@@ -312,7 +324,7 @@ function shellTrace(args)
         var setting = args[0];
         switch (setting)
         {
-            case "on": 
+            case "on":
                 if (_Trace && _SarcasticMode)
                 {
                     _StdIn.putText("Trace is already on, dumbass.");
@@ -322,15 +334,15 @@ function shellTrace(args)
                     _Trace = true;
                     _StdIn.putText("Trace ON");
                 }
-                
+
                 break;
-            case "off": 
+            case "off":
                 _Trace = false;
-                _StdIn.putText("Trace OFF");                
-                break;                
+                _StdIn.putText("Trace OFF");
+                break;
             default:
                 _StdIn.putText("Invalid arguement.  Usage: trace <on | off>.");
-        }        
+        }
     }
     else
     {
