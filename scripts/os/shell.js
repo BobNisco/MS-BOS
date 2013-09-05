@@ -89,7 +89,7 @@ function shellInit() {
         _StdIn.putText(currentDateTime.getHours() + ":" + currentDateTime.getMinutes() +
             " " + currentDateTime.getMonth() + "/" + currentDateTime.getDate() + "/"
             + currentDateTime.getFullYear());
-    }
+    };
     this.commandList[this.commandList.length] = sc;
 
     // whereami
@@ -109,7 +109,21 @@ function shellInit() {
         } else {
             _StdIn.putText("You're probably in your parent's basement.");
         }
-    }
+    };
+    this.commandList[this.commandList.length] = sc;
+
+    // load
+    sc = new ShellCommand();
+    sc.command = "load";
+    sc.description = "- Checks the User Program Input box for errors";
+    sc.function = function() {
+        var input = document.getElementById("taProgramInput").value;
+        if (input.match(/([0-9A-Fa-f])+(\s)?/)) {
+            _StdIn.putText("No errors. Good luck running it though :)");
+        } else {
+            _StdIn.putText("What kind of input is that!?");
+        }
+    };
     this.commandList[this.commandList.length] = sc;
 
     // processes - list the running processes and their IDs
