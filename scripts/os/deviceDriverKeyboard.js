@@ -48,8 +48,7 @@ function krnKbdDispatchKeyPress(params)
         _KernelInputQueue.enqueue(chr);
     } else if ((keyCode >= 48) && (keyCode <= 57)) {
         _KernelInputQueue.enqueue(handleNumberChar(keyCode, isShifted));
-    }
-    else if ((keyCode == 32)                     ||   // space
+    } else if ((keyCode == 32)                     ||   // space
              (keyCode == 13) )                        // enter
     {
         chr = String.fromCharCode(keyCode);
@@ -62,14 +61,23 @@ function krnKbdDispatchKeyPress(params)
         if (deletedChar === "") {
             return;
         }
-        var startX = _Console.CurrentXPosition - _DrawingContext.measureText(_Console.CurrentFont, _Console.CurrentFontSize, deletedChar),
-            startY = _Console.CurrentYPosition - (_DefaultFontSize - 1)
-        // Trim the buffer
-        _Console.buffer = _Console.buffer.substring(0, _Console.buffer.length - 1);
-        // Draw a rectangle over the letter that was deleted
-        _DrawingContext.clearRect(startX, startY, _Console.CurrentXPosition, _Console.CurrentYPosition);
-        // Move the current X position since we've removed a character
-        _Console.CurrentXPosition -= _DrawingContext.measureText(_Console.CurrentFont, _Console.CurrentFontSize, deletedChar);
+        _Console.clearLetter(deletedChar);
+    } else if (keyCode == 38 || keyCode == 40) {    // Up or down arrow
+        _Console.clearLine();
+        _Console.buffer = "";
+        var offsetValue = keyCode == 38 ? -1 : 1;
+        enqueueWord(_Console.history[_Console.currentHistoryIndex], offsetValue);
+        if (_Console.history[_Console.currentHistoryIndex + offsetValue]) {
+            _Console.currentHistoryIndex += offsetValue;
+        }
+    }
+}
+
+function enqueueWord(word, moveValue) {
+    if (word) {
+        for (var i = 0; i < word.length; i++) {
+            _KernelInputQueue.enqueue(word.charAt(i));
+        }
     }
 }
 

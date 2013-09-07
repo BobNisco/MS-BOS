@@ -14,7 +14,9 @@ function CLIconsole() {
     this.CurrentXPosition = 0;
     this.CurrentYPosition = _DefaultFontSize;
     this.buffer = "";
-    
+    this.history = new Array();
+    this.currentHistoryIndex = -1;
+
     // Methods
     this.init = function() {
        this.clearScreen();
@@ -39,6 +41,10 @@ function CLIconsole() {
            if (chr == String.fromCharCode(13))  //     Enter key
            {
                // The enter key marks the end of a console command, so ...
+               // ... add it to our shell history
+               this.history.push(this.buffer);
+               // Reset the currentHistoryIndex
+               this.currentHistoryIndex = this.history.length - 1;
                // ... tell the shell ...
                _OsShell.handleInput(this.buffer);
                // ... and reset our buffer.
@@ -77,4 +83,26 @@ function CLIconsole() {
        this.CurrentYPosition += _DefaultFontSize + _FontHeightMargin;
        // TODO: Handle scrolling.
     };
+
+    this.clearLetter = function(deletedChar) {
+      var startX = this.CurrentXPosition - _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, deletedChar),
+          startY = this.CurrentYPosition - (_DefaultFontSize - 1);
+        // Trim the buffer
+        this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+        // Draw a rectangle over the letter that was deleted
+        _DrawingContext.clearRect(startX, startY, this.CurrentXPosition, this.CurrentYPosition);
+        // Move the current X position since we've removed a character
+        this.CurrentXPosition -= _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, deletedChar);
+    };
+
+    this.clearLine = function() {
+        var startX = this.CurrentXPosition,
+            startY = this.CurrentYPosition - (_DefaultFontSize - 1);
+
+        for (var i = 0; i < this.buffer.length; i++) {
+          startX -= _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, this.buffer.charAt(i));
+        }
+        _DrawingContext.clearRect(startX, startY, this.CurrentXPosition, this.CurrentYPosition);
+        this.CurrentXPosition = startX;
+    }
 }
