@@ -57,9 +57,19 @@ function krnKbdDispatchKeyPress(params)
     } else if (isPunctuationChar(keyCode)) {
         _KernelInputQueue.enqueue(handlePunctuationChar(keyCode, isShifted));
     } else if (keyCode == 8) {
+        var deletedChar = _Console.buffer.charAt(_Console.buffer.length - 1);
+        // Test to see if the buffer is blank
+        if (deletedChar === "") {
+            return;
+        }
+        var startX = _Console.CurrentXPosition - _DrawingContext.measureText(_Console.CurrentFont, _Console.CurrentFontSize, deletedChar),
+            startY = _Console.CurrentYPosition - (_DefaultFontSize - 1)
         // Trim the buffer
         _Console.buffer = _Console.buffer.substring(0, _Console.buffer.length - 1);
-        // TODO: Update the display of the console
+        // Draw a rectangle over the letter that was deleted
+        _DrawingContext.clearRect(startX, startY, _Console.CurrentXPosition, _Console.CurrentYPosition);
+        // Move the current X position since we've removed a character
+        _Console.CurrentXPosition -= _DrawingContext.measureText(_Console.CurrentFont, _Console.CurrentFontSize, deletedChar);
     }
 }
 
