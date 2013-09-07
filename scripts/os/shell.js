@@ -99,14 +99,13 @@ function shellInit() {
     sc.function = function() {
         // Check to see that browser supports geolocation
         if (navigator.geolocation) {
-            _StdIn.putText("Getting your geolocation. Please note that if nothing appears," +
-                " it may be because of your browser/settings.");
-            _StdIn.advanceLine();
             navigator.geolocation.getCurrentPosition(function(position) {
                 _StdIn.putText("Lat: " + position.coords.latitude + " Long: " +
                     position.coords.longitude);
                 _StdIn.advanceLine();
             }, function(error) {
+                _StdIn.putText("Error while trying to geolocate your position.")
+                _StdIn.advanceLine();
                 _StdIn.putText("You're probably in your parent's basement.");
                 _StdIn.advanceLine();
             });
