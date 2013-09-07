@@ -105,6 +105,10 @@ function shellInit() {
             navigator.geolocation.getCurrentPosition(function(position) {
                 _StdIn.putText("Lat: " + position.coords.latitude + " Long: " +
                     position.coords.longitude);
+                _StdIn.advanceLine();
+            }, function(error) {
+                _StdIn.putText("You're probably in your parent's basement.");
+                _StdIn.advanceLine();
             });
         } else {
             _StdIn.putText("You're probably in your parent's basement.");
