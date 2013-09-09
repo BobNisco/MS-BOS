@@ -44,7 +44,7 @@ function CLIconsole() {
                // ... add it to our shell history
                this.history.push(this.buffer);
                // Reset the currentHistoryIndex
-               this.currentHistoryIndex = this.history.length - 1;
+               this.currentHistoryIndex = this.history.length;
                // ... tell the shell ...
                _OsShell.handleInput(this.buffer);
                // ... and reset our buffer.

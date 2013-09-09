@@ -33,9 +33,8 @@ function krnKbdDispatchKeyPress(params)
     krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
     var chr = "";
     // Check to see if we even want to deal with the key that was pressed.
-    if ( ((keyCode >= 65) && (keyCode <= 90)) ||   // A..Z
-         ((keyCode >= 97) && (keyCode <= 123)) )   // a..z
-    {
+    if (((keyCode >= 65) && (keyCode <= 90)) ||   // A..Z
+        ((keyCode >= 97) && (keyCode <= 123))) {  // a..z
         // Determine the character we want to display.
         // Assume it's lowercase...
         chr = String.fromCharCode(keyCode + 32);
@@ -46,16 +45,14 @@ function krnKbdDispatchKeyPress(params)
         }
         // TODO: Check for caps-lock and handle as shifted if so.
         _KernelInputQueue.enqueue(chr);
-    } else if ((keyCode >= 48) && (keyCode <= 57)) {
+    } else if ((keyCode >= 48) && (keyCode <= 57)) {    // Number keys 0-9
         _KernelInputQueue.enqueue(handleNumberChar(keyCode, isShifted));
-    } else if ((keyCode == 32)                     ||   // space
-             (keyCode == 13) )                        // enter
-    {
+    } else if ((keyCode == 32) || (keyCode == 13)) {    // Space or enter
         chr = String.fromCharCode(keyCode);
         _KernelInputQueue.enqueue(chr);
-    } else if (isPunctuationChar(keyCode)) {
+    } else if (isPunctuationChar(keyCode)) {        // Punctuation keys
         _KernelInputQueue.enqueue(handlePunctuationChar(keyCode, isShifted));
-    } else if (keyCode == 8) {
+    } else if (keyCode == 8) {                      // Backspace
         var deletedChar = _Console.buffer.charAt(_Console.buffer.length - 1);
         // Test to see if the buffer is blank
         if (deletedChar === "") {
@@ -65,22 +62,34 @@ function krnKbdDispatchKeyPress(params)
     } else if (keyCode == 38 || keyCode == 40) {    // Up or down arrow
         _Console.clearLine();
         _Console.buffer = "";
-        var offsetValue = keyCode == 38 ? -1 : 1;
-        enqueueWord(_Console.history[_Console.currentHistoryIndex], offsetValue);
-        if (_Console.history[_Console.currentHistoryIndex + offsetValue]) {
-            _Console.currentHistoryIndex += offsetValue;
+        // If we are using the up arrow, we will be moving backwards
+        // in the console history array, else we are using the down arrow
+        // and we will need to advance forward
+        var offset = (keyCode == 38) ? -1 : 1;
+        _Console.currentHistoryIndex += offset;
+
+        if (_Console.history[_Console.currentHistoryIndex]) {
+            // We are in a valid point of the history array,
+            // so we will go ahead and queue it up!
+            enqueueWord(_Console.history[_Console.currentHistoryIndex]);
+        } else if (_Console.currentHistoryIndex < 0) {
+            // Handle the beginning of history edge case
+            _Console.currentHistoryIndex = -1;
+        } else if (_Console.currentHistoryIndex >= _Console.history.length) {
+            // Handle the end of history edge case
+            _Console.currentHistoryIndex = _Console.history.length;
         }
     }
 }
 
-function enqueueWord(word, moveValue) {
-    if (word) {
-        for (var i = 0; i < word.length; i++) {
-            _KernelInputQueue.enqueue(word.charAt(i));
-        }
+// Enqueues the word, letter by letter, into the _KernelInputQueue
+function enqueueWord(word) {
+    for (var i = 0; i < word.length; i++) {
+        _KernelInputQueue.enqueue(word.charAt(i));
     }
 }
 
+// Returns boolean representing if given charcode is a punctuation key
 function isPunctuationChar(ch) {
     if ((ch >= 186 && ch <= 192) ||
         (ch >= 219 && ch <= 222)) {
