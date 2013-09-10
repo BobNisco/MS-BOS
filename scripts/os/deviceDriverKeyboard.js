@@ -27,9 +27,19 @@ function krnKbdDriverEntry()
 
 function krnKbdDispatchKeyPress(params)
 {
-    // Parse the params.    TODO: Check that they are valid and osTrapError if not.
+    // Parse the params.
     var keyCode = params[0];
     var isShifted = params[1];
+    // Check for any falsy value on keyCode
+    if (!keyCode) {
+        krnTrapError("The supplied keyCode is not valid");
+    }
+    // Check if isShifted is a boolean (or string/int representing boolean) value
+    if (!(isShifted === true || isShifted === false ||
+        isShifted === 'true' || isShifted === 'false' ||
+        isShifted === 0 || isShifted === 1)) {
+        krnTrapError("The supplied isShifted value is not valid");
+    }
     krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
     var chr = "";
     // Check to see if we even want to deal with the key that was pressed.
