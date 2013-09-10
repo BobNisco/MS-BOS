@@ -86,9 +86,17 @@ function shellInit() {
     sc.description = "- Displays the current date and time."
     sc.function = function() {
         var currentDateTime = new Date();
-        _StdIn.putText(currentDateTime.getHours() + ":" + currentDateTime.getMinutes() +
-            " " + currentDateTime.getMonth() + "/" + currentDateTime.getDate() + "/"
-            + currentDateTime.getFullYear());
+        if (_SarcasticMode) {
+            _StdIn.putText("What does it matter what day and time it is?");
+            _StdIn.advanceLine();
+            _StdIn.putText("Like you have anywhere to be.");
+            _StdIn.advanceLine();
+            _StdIn.putText("You're playing with an OS by yourself.");
+        } else {
+            _StdIn.putText(currentDateTime.getHours() + ":" + currentDateTime.getMinutes() +
+                " " + currentDateTime.getMonth() + "/" + currentDateTime.getDate() + "/"
+                + currentDateTime.getFullYear());
+        }
     };
     this.commandList[this.commandList.length] = sc;
 
@@ -120,7 +128,11 @@ function shellInit() {
     sc.command = "bsodplz";
     sc.description = "- Displays a BSOD, because you asked nicely";
     sc.function = function() {
-        krnTrapError('Look what you\'ve done this time!');
+        if (_SarcasticMode) {
+            krnTrapError(rot13('Whfg... shpx bss'));
+        } else {
+            krnTrapError('Look what you\'ve done this time!');
+        }
     };
     this.commandList[this.commandList.length] = sc;
 
@@ -138,8 +150,13 @@ function shellInit() {
             hours = ('0' + Math.floor(adjustedSeconds / (60 * 60))).slice(-2),
             minutes = ('0' + Math.floor((adjustedSeconds % (60 * 60)) / 60)).slice(-2),
             seconds = ('0' + Math.ceil((adjustedSeconds % (60 * 60) % 60))).slice(-2);
-        _StdIn.putText("I've been up for " + hours + ":" + minutes + ":" + seconds +
-            ", can you believe it!?");
+        if (_SarcasticMode) {
+            _StdIn.putText("I've been up for " + hours + ":" + minutes + ":" + seconds +
+                ", which is far too long.")
+        } else {
+            _StdIn.putText("I've been up for " + hours + ":" + minutes + ":" + seconds +
+                ", can you believe it!?");
+        }
     };
     this.commandList[this.commandList.length] = sc;
 
