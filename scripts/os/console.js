@@ -105,4 +105,21 @@ function CLIconsole() {
         _DrawingContext.clearRect(startX, startY, this.CurrentXPosition, this.CurrentYPosition);
         this.CurrentXPosition = startX;
     }
+
+    this.drawBSOD = function(msg) {
+      // Give it a nice blue background
+      _DrawingContext.rect(0, 0, _Canvas.width, _Canvas.height);
+      _DrawingContext.fillStyle = "#2067B2";
+      _DrawingContext.fill();
+      this.resetFillStyle();
+      _DrawingContext.font = '110pt Calibri';
+      _DrawingContext.fillText(':(', _Canvas.width / 3.1, _Canvas.height / 2);
+        _DrawingContext.font = '12pt Calibri';
+      _DrawingContext.fillText(msg, _Canvas.width / 3, _Canvas.height - 200);
+    }
+
+    // Reset the fill style to the default color.
+    this.resetFillStyle = function() {
+      _DrawingContext.fillStyle = "#DFDBC3";
+    }
 }

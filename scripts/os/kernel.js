@@ -1,17 +1,17 @@
 /* ------------
    Kernel.js
-   
+
    Requires globals.js
-   
+
    Routines for the Operating System, NOT the host.
-   
-   This code references page numbers in the text book: 
+
+   This code references page numbers in the text book:
    Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
    ------------ */
 
 
 //
-// OS Startup and Shutdown Routines   
+// OS Startup and Shutdown Routines
 //
 function krnBootstrap()      // Page 8.
 {
@@ -58,11 +58,11 @@ function krnBootstrap()      // Page 8.
 function krnShutdown()
 {
     krnTrace("begin shutdown OS");
-    // TODO: Check for running processes.  Alert if there are some, alert and stop.  Else...    
+    // TODO: Check for running processes.  Alert if there are some, alert and stop.  Else...
     // ... Disable the Interrupts.
     krnTrace("Disabling the interrupts.");
     krnDisableInterrupts();
-    // 
+    //
     // Unload the Device Drivers?
     // More?
     //
@@ -70,15 +70,15 @@ function krnShutdown()
 }
 
 
-function krnOnCPUClockPulse() 
+function krnOnCPUClockPulse()
 {
     /* This gets called from the host hardware sim every time there is a hardware clock pulse.
        This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
-       This, on the other hand, is the clock pulse from the hardware (or host) that tells the kernel 
+       This, on the other hand, is the clock pulse from the hardware (or host) that tells the kernel
        that it has to look for interrupts and process them if it finds any.                           */
 
     // Check for an interrupt, are any. Page 560
-    if (_KernelInterruptQueue.getSize() > 0)    
+    if (_KernelInterruptQueue.getSize() > 0)
     {
         // Process the first interrupt on the interrupt queue.
         // TODO: Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
@@ -88,7 +88,7 @@ function krnOnCPUClockPulse()
     else if (_CPU.isExecuting) // If there are no interrupts then run one CPU cycle if there is anything being processed.
     {
         _CPU.cycle();
-    }    
+    }
     else                       // If there are no interrupts and there is nothing being executed then just be idle.
     {
        krnTrace("Idle");
@@ -96,9 +96,9 @@ function krnOnCPUClockPulse()
 }
 
 
-// 
+//
 // Interrupt Handling
-// 
+//
 function krnEnableInterrupts()
 {
     // Keyboard
@@ -120,18 +120,18 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 
     // Invoke the requested Interrupt Service Routine via Switch/Case rather than an Interrupt Vector.
     // TODO: Consider using an Interrupt Vector in the future.
-    // Note: There is no need to "dismiss" or acknowledge the interrupts in our design here.  
+    // Note: There is no need to "dismiss" or acknowledge the interrupts in our design here.
     //       Maybe the hardware simulation will grow to support/require that in the future.
     switch (irq)
     {
-        case TIMER_IRQ: 
+        case TIMER_IRQ:
             krnTimerISR();                   // Kernel built-in routine for timers (not the clock).
             break;
-        case KEYBOARD_IRQ: 
+        case KEYBOARD_IRQ:
             krnKeyboardDriver.isr(params);   // Kernel mode device driver
             _StdIn.handleInput();
             break;
-        default: 
+        default:
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }
 }
@@ -139,7 +139,7 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 function krnTimerISR()  // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver).
 {
     // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
-}   
+}
 
 
 
@@ -164,16 +164,16 @@ function krnTimerISR()  // The built-in TIMER (not clock) Interrupt Service Rout
 //
 function krnTrace(msg)
 {
-   // Check globals to see if trace is set ON.  If so, then (maybe) log the message. 
+   // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
    if (_Trace)
    {
       if (msg === "Idle")
       {
          // We can't log every idle clock pulse because it would lag the browser very quickly.
-         if (_OSclock % 10 == 0)  // Check the CPU_CLOCK_INTERVAL in globals.js for an 
+         if (_OSclock % 10 == 0)  // Check the CPU_CLOCK_INTERVAL in globals.js for an
          {                        // idea of the tick rate and adjust this line accordingly.
             hostLog(msg, "OS");
-         }         
+         }
       }
       else
       {
@@ -181,10 +181,11 @@ function krnTrace(msg)
       }
    }
 }
-   
+
 function krnTrapError(msg)
 {
     hostLog("OS ERROR - TRAP: " + msg);
     // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
+    _Console.drawBSOD(msg);
     krnShutdown();
 }

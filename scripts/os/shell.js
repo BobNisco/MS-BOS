@@ -115,6 +115,15 @@ function shellInit() {
     };
     this.commandList[this.commandList.length] = sc;
 
+    // bsodplz
+    sc = new ShellCommand();
+    sc.command = "bsodplz";
+    sc.description = "- Displays a BSOD, because you asked nicely";
+    sc.function = function() {
+        krnTrapError('Look what you\'ve done this time!');
+    };
+    this.commandList[this.commandList.length] = sc;
+
     // load
     sc = new ShellCommand();
     sc.command = "load";
