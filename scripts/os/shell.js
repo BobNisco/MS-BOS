@@ -124,6 +124,25 @@ function shellInit() {
     };
     this.commandList[this.commandList.length] = sc;
 
+    // uptime
+    sc = new ShellCommand();
+    sc.command = "uptime";
+    sc.description = "- Displays the amount of time that the OS has been active.";
+    sc.function = function() {
+        var adjustedSeconds = _OSclock / 10.0,
+            // I want to pad these numbers with a 0, so it will display the time properly.
+            // If the number of seconds is "1", and I have prepended a 0 to it, then
+            // it is essentially "01".slice(-2), which will return "01" as expected.
+            // If the number of seconds is "32", and I have prepended a 0 to it, then
+            // it is essentially "032".slice(-2), which will return "32" as expected
+            hours = ('0' + Math.floor(adjustedSeconds / (60 * 60))).slice(-2),
+            minutes = ('0' + Math.floor((adjustedSeconds % (60 * 60)) / 60)).slice(-2),
+            seconds = ('0' + Math.ceil((adjustedSeconds % (60 * 60) % 60))).slice(-2);
+        _StdIn.putText("I've been up for " + hours + ":" + minutes + ":" + seconds +
+            ", can you believe it!?");
+    };
+    this.commandList[this.commandList.length] = sc;
+
     // load
     sc = new ShellCommand();
     sc.command = "load";
