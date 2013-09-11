@@ -94,8 +94,9 @@ function shellInit() {
             _StdIn.putText("You're playing with an OS by yourself.");
             _StdIn.advanceLine();
             _StdIn.putText("Fine, I'll tell you anyway.");
+            _StdIn.advanceLine();
         }
-        _StdIn.putText(currentDateTime.getHours() + ":" + currentDateTime.getMinutes() +
+        _StdIn.putText(currentDateTime.getHours() + ":" + ('0' + currentDateTime.getMinutes()).slice(-2) +
             " " + currentDateTime.getMonth() + "/" + currentDateTime.getDate() + "/"
             + currentDateTime.getFullYear());
     };
