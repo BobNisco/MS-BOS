@@ -94,11 +94,11 @@ function CLIconsole() {
 
     this.clearLetter = function(deletedChar) {
         var startX = this.CurrentXPosition - _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, deletedChar),
-            startY = this.CurrentYPosition - (_DefaultFontSize - 1);
+            startY = this.CurrentYPosition - _DefaultFontSize - 2;
         // Trim the buffer
         this.buffer = this.buffer.substring(0, this.buffer.length - 1);
         // Draw a rectangle over the letter that was deleted
-        _DrawingContext.clearRect(startX, startY, this.CurrentXPosition, this.CurrentYPosition);
+        _DrawingContext.clearRect(startX, startY, this.CurrentXPosition, this.CurrentYPosition + 2);
         // Move the current X position since we've removed a character
         this.CurrentXPosition -= _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, deletedChar);
     };
