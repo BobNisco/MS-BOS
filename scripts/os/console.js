@@ -79,9 +79,17 @@ function CLIconsole() {
     };
 
     this.advanceLine = function() {
-       this.CurrentXPosition = 0;
-       this.CurrentYPosition += _DefaultFontSize + _FontHeightMargin;
-       // TODO: Handle scrolling.
+      this.CurrentXPosition = 0;
+      this.CurrentYPosition += _DefaultFontSize + _FontHeightMargin;
+      // Handle scrolling, if necessary
+      if (this.CurrentYPosition >= _Canvas.height) {
+        // Get the canvas data, at an offset
+        var oldCanvasData = _DrawingContext.getImageData(0, this.CurrentFontSize + 5, _Canvas.width, _Canvas.height);
+        // Redraw it
+        _DrawingContext.putImageData(oldCanvasData, 0, 0);
+        // Move the current Y position
+        this.CurrentYPosition = _Canvas.height - this.CurrentFontSize;
+      }
     };
 
     this.clearLetter = function(deletedChar) {
