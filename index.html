@@ -3,7 +3,7 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <meta name="author"             content="Bob Nisco" />
-   <link rel="stylesheet" href="alanbbos.css" type="text/css" media="screen" />
+   <link rel="stylesheet" href="ms-bos.css" type="text/css" media="screen" />
    <title>
       MS-BOS
    </title>
@@ -33,9 +33,9 @@
 
 <body onload="hostInit();">
 
-<div id="divMain" style="width:100%;">
+<div id="divMain">
 
-   <div id="divButtonBar" style="margin:4px;">
+   <div id="divButtonBar">
       <input type="button"
              id = "btnStartOS"
              name="brnStartOS"
@@ -63,15 +63,21 @@
              onclick="hostBtnReset_click(this);">
    </div>
 
-   <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
+   <div>
+    <div id="taskbar">
+      <span id="taskbar-datetime"></span>
+      <span id="taskbar-status" class="pull-right"></span>
+    </div>
+    <div id="divConsole">
       <canvas id="display"
-              width="500"
-              height="500"
-              tabindex="3">
+        width="500"
+        height="500"
+        tabindex="3">
       </canvas>
+ </div>
    </div>
 
-   <div id="divLog" style="margin-left:520px;">
+   <div id="divLog">
       <label>
          Log
          <br>
@@ -83,7 +89,7 @@
       </label>
    </div>
 
-   <div id="divUserProgramInput" style="margin-left:520px;">
+   <div id="divUserProgramInput">
       <label>
          User Program Input
          <br>
@@ -97,7 +103,7 @@
 
 </div>
 
-<p class="footerText" style="clear:both;">
+<p class="footerText clear">
    <br>
    Copyright &copy; 2008 - 2013 No Rights Reserved.
    <br>

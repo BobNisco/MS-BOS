@@ -85,7 +85,6 @@ function shellInit() {
     sc.command = "date";
     sc.description = "- Displays the current date and time."
     sc.function = function() {
-        var currentDateTime = new Date();
         if (_SarcasticMode) {
             _StdIn.putText("What does it matter what day and time it is?");
             _StdIn.advanceLine();
@@ -96,9 +95,7 @@ function shellInit() {
             _StdIn.putText("Fine, I'll tell you anyway.");
             _StdIn.advanceLine();
         }
-        _StdIn.putText(currentDateTime.getHours() + ":" + ('0' + currentDateTime.getMinutes()).slice(-2) +
-            " " + currentDateTime.getMonth() + "/" + currentDateTime.getDate() + "/"
-            + currentDateTime.getFullYear());
+        _StdIn.putText(getCurrentDateTime());
     };
     this.commandList[this.commandList.length] = sc;
 
@@ -175,6 +172,26 @@ function shellInit() {
             _StdIn.putText("No errors. Good luck running it though :)");
         } else {
             _StdIn.putText("What kind of input is that!?");
+        }
+    };
+    this.commandList[this.commandList.length] = sc;
+
+    // status
+    sc = new ShellCommand();
+    sc.command = "status";
+    sc.description = "<string> - Sets the taskbar status message";
+    sc.function = function(args) {
+        if (args.length > 0)
+        {
+            var newStatus = "";
+            for (var i = 0; i < args.length; i++) {
+                newStatus += " " + args[i];
+            }
+            _Taskbar.setStatus(newStatus);
+        }
+        else
+        {
+            _StdIn.putText("Usage: status <string>  Please supply a string.");
         }
     };
     this.commandList[this.commandList.length] = sc;
