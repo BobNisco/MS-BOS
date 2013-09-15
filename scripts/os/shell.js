@@ -113,14 +113,17 @@ function shellInit() {
                 _StdIn.putText("Lat: " + position.coords.latitude + " Long: " +
                     position.coords.longitude);
                 _StdIn.advanceLine();
+                _OsShell.putPrompt();
             }, function(error) {
                 _StdIn.putText("Error while trying to geolocate your position.")
                 _StdIn.advanceLine();
                 _StdIn.putText("You're probably in your parent's basement.");
                 _StdIn.advanceLine();
+                _OsShell.putPrompt();
             });
         } else {
             _StdIn.putText("You're probably in your parent's basement.");
+            _OsShell.putPrompt();
         }
     };
     this.commandList[this.commandList.length] = sc;
