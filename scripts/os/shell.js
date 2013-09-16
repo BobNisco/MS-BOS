@@ -168,7 +168,7 @@ function shellInit() {
     sc.description = "- Checks the User Program Input box for errors";
     sc.function = function() {
         var input = document.getElementById("taProgramInput").value;
-        if (input.match(/^#[0-9A-F]/i)) {
+        if (input.match(/^[0-9A-F]/i)) {
             _StdIn.putText("No errors. Good luck running it though :)");
         } else {
             _StdIn.putText("What kind of input is that!?");
