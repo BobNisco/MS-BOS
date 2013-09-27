@@ -86,3 +86,11 @@ h3 {
     margin-left:520px;
     padding-top: 28px;
 }
+
+#divMemory {
+    max-height: 200px;
+    height: 200px;
+    overflow: auto;
+    width: 350px;
+    font-family: "Lucida Console", Monaco, monospace;
+}

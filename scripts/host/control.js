@@ -103,7 +103,10 @@ function hostBtnStartOS_click(btn)
     _CPU.init();
 
     // ... Create and initialize the memory ...
-    _MEMORY = new Memory();
+    // We will need 3 sections of 256 bytes of memory each
+    // to hold our 3 user programs.
+    // 256 * 3 = 768. Mathematical!
+    _MEMORY = new Memory(768);
 
     // ... then set the host clock pulse ...
     _hardwareClockID = setInterval(hostClockPulse, CPU_CLOCK_INTERVAL);
