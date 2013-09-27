@@ -1,15 +1,15 @@
 /* ms-bos.css */
 
 body {
-    background: #909193 url(images/linen.png) repeat;
+    background: #1d1f21;
     font-family: Helvetica, Verdana, Arial, sans-serif;
     font-size: 12pt;
     font-weight: normal;
     font-style: normal;
+    color: #b5bd68;
 }
 
 h1 {
-   color: black;
     font-size: 24pt;
     font-weight: normal;
     font-style: normal;
@@ -17,7 +17,6 @@ h1 {
 }
 
 h2 {
-    color: black;
     font-size: 20pt;
     font-weight: normal;
     font-style: normal;
@@ -31,8 +30,8 @@ h3 {
 }
 
 #display {
-    background-color:#DFDBC3;
-    border: 2px solid red;
+    background-color: #1d1f21;
+    border: 2px solid #c5c8c6;
     cursor: default;
 }
 
@@ -41,21 +40,19 @@ h3 {
 }
 
 .footerText {
-    color: black;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 8pt;
     text-align: center;
 }
 
 #taskbar {
-    width: 496px;
+    width: 492px;
     height: 1.5em;
     line-height: 1.5em;
     padding-left: 4px;
     padding-right: 4px;
     margin: 4px;
-    background: white;
-    color: black;
+    border: 2px solid #c5c8c6;
 }
 
 .pull-right {
@@ -71,20 +68,21 @@ h3 {
 }
 
 #divConsole {
-    margin:4px;
-    width:500px;
-    height:500px;
-    float:left;
-}
-
-#divLog, #divUserProgramInput {
-    margin-left:520px;
+    margin: 4px;
+    width: 500px;
+    height: 500px;
+    float: left;
 }
 
 #divButtonBar {
     margin:4px;
 }
 
-#divMain {
-    width:100%;
+.column {
+    width: 520px;
+}
+
+#divStatuses {
+    margin-left:520px;
+    padding-top: 28px;
 }

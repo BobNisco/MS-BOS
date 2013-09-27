@@ -1,116 +1,74 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-   <meta name="author"             content="Bob Nisco" />
-   <link rel="stylesheet" href="ms-bos.css" type="text/css" media="screen" />
-   <title>
-      MS-BOS
-   </title>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta name="author"             content="Bob Nisco" />
+		<link rel="stylesheet" href="ms-bos.css" type="text/css" media="screen" />
+		<title>MS-BOS</title>
 
-   <!-- Globals CONSTANTS and _Variables. Must included be first. -->
-   <script type="text/javascript" src="globals.js"></script>
+		<!-- Globals CONSTANTS and _Variables. Must included be first. -->
+		<script type="text/javascript" src="globals.js"></script>
 
-   <!-- Host (Hardware Simulation) Routines -->
-   <script type="text/javascript" src="scripts/host/control.js"></script>
-   <script type="text/javascript" src="scripts/host/devices.js"></script>
-   <script type="text/javascript" src="scripts/host/cpu.js"></script>
-   <script type="text/javascript" src="scripts/host/memory.js"></script>
+		<!-- Host (Hardware Simulation) Routines -->
+		<script type="text/javascript" src="scripts/host/control.js"></script>
+		<script type="text/javascript" src="scripts/host/devices.js"></script>
+		<script type="text/javascript" src="scripts/host/cpu.js"></script>
+		<script type="text/javascript" src="scripts/host/memory.js"></script>
 
-   <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
-   <script type="text/javascript" src="scripts/os/interrupt.js"></script>
-   <script type="text/javascript" src="scripts/os/canvastext.js"></script>
-   <script type="text/javascript" src="scripts/os/console.js"></script>
-   <script type="text/javascript" src="scripts/os/deviceDriver.js"></script>
-   <script type="text/javascript" src="scripts/os/deviceDriverKeyboard.js"></script>
-   <script type="text/javascript" src="scripts/os/queue.js"></script>
-   <script type="text/javascript" src="scripts/os/shell.js"></script>
-   <script type="text/javascript" src="scripts/os/kernel.js"></script>
+		<!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
+		<script type="text/javascript" src="scripts/os/interrupt.js"></script>
+		<script type="text/javascript" src="scripts/os/canvastext.js"></script>
+		<script type="text/javascript" src="scripts/os/console.js"></script>
+		<script type="text/javascript" src="scripts/os/deviceDriver.js"></script>
+		<script type="text/javascript" src="scripts/os/deviceDriverKeyboard.js"></script>
+		<script type="text/javascript" src="scripts/os/queue.js"></script>
+		<script type="text/javascript" src="scripts/os/shell.js"></script>
+		<script type="text/javascript" src="scripts/os/kernel.js"></script>
 
-   <!-- Other Routines -->
-   <script type="text/javascript" src="scripts/utils.js"></script>
-   <script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
-</head>
+		<!-- Other Routines -->
+		<script type="text/javascript" src="scripts/utils.js"></script>
+		<script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
+	</head>
 
-<body onload="hostInit();">
+	<body onload="hostInit();">
+		<div id="divMain" class="column pull-left">
+			<div id="divButtonBar">
+				<input type="button" id="btnStartOS" name="brnStartOS" class="normal_button" value="Start" tabindex="0" onclick="hostBtnStartOS_click(this);">
+				<input type="button" id="btnHaltOS" name="brnHaltOS" class="normal_button" disabled="disabled" value="Halt" tabindex="1" onclick="hostBtnHaltOS_click(this);">
+				<input type="button" id="btnReset" name="brnReset" class="normal_button" disabled="disabled" value="Reset" tabindex="2" onclick="hostBtnReset_click(this);">
+			</div>
+			<div id="taskbar">
+				<span id="taskbar-datetime"></span>
+				<span id="taskbar-status" class="pull-right"></span>
+			</div>
+			<div id="divConsole">
+				<canvas id="display" width="500" height="550" tabindex="3"></canvas>
+			</div>
+		</div>
 
-<div id="divMain">
+		<div id="divStatuses" class="column">
+			<div id="divLog">
+				<label>Log</label>
+				<br>
+				<textarea name="taLog" id="taLog" rows="26" cols="48"></textarea>
+			</div>
 
-   <div id="divButtonBar">
-      <input type="button"
-             id = "btnStartOS"
-             name="brnStartOS"
-             class="normal_button"
-             value="Start"
-             tabindex="0"
-             onclick="hostBtnStartOS_click(this);">
+			<div id="divUserProgramInput">
+				<label>User Program Input</label>
+				<br>
+				<textarea name="taProgramInput" id="taProgramInput" rows="8" cols="48"></textarea>
+			</div>
 
-      <input type="button"
-             id = "btnHaltOS"
-             name="brnHaltOS"
-             class="normal_button"
-             disabled="disabled"
-             value="Halt"
-             tabindex="1"
-             onclick="hostBtnHaltOS_click(this);">
+			<div id="divMemoryWrapper" class="column">
+				<label>Memory</label>
+				<div id="divMemory">
+				</div>
+			</div>
+		</div>
+		<div class="clear"></div>
 
-      <input type="button"
-             id = "btnReset"
-             name="brnReset"
-             class="normal_button"
-             disabled="disabled"
-             value="Reset"
-             tabindex="2"
-             onclick="hostBtnReset_click(this);">
-   </div>
-
-   <div>
-    <div id="taskbar">
-      <span id="taskbar-datetime"></span>
-      <span id="taskbar-status" class="pull-right"></span>
-    </div>
-    <div id="divConsole">
-      <canvas id="display"
-        width="500"
-        height="500"
-        tabindex="3">
-      </canvas>
- </div>
-   </div>
-
-   <div id="divLog">
-      <label>
-         Log
-         <br>
-         <textarea name="taLog"
-                   id  ="taLog"
-                   rows="26"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
-
-   <div id="divUserProgramInput">
-      <label>
-         User Program Input
-         <br>
-         <textarea name="taProgramInput"
-                   id  ="taProgramInput"
-                   rows="8"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
-
-</div>
-
-<p class="footerText clear">
-   <br>
-   Copyright &copy; 2008 - 2013 No Rights Reserved.
-   <br>
-   Reproduction is prohibited without the express written consent of
-   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
-</p>
-
-</body>
+		<p class="footerText clear">
+			Copyright &copy; 2008 - 2013 No Rights Reserved.
+		</p>
+	</body>
 </html>
