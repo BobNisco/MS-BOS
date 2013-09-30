@@ -113,30 +113,30 @@ CanvasTextFunctions.letters = {
     '~': { width: 24, points: [[3,6],[3,8],[4,11],[6,12],[8,12],[10,11],[14,8],[16,7],[18,7],[20,8],[21,10],[-1,-1],[3,8],[4,10],[6,11],[8,11],[10,10],[14,7],[16,6],[18,6],[20,7],[21,10],[21,12]] }
 };
 
-CanvasTextFunctions.letter = function (ch) 
+CanvasTextFunctions.letter = function (ch)
 {
     return CanvasTextFunctions.letters[ch];
 };
 
-CanvasTextFunctions.ascent = function(font, size) 
+CanvasTextFunctions.ascent = function(font, size)
 {
     return size;
 };
 
-CanvasTextFunctions.descent = function(font, size) 
+CanvasTextFunctions.descent = function(font, size)
 {
     return 7.0*size/25.0;
 };
 
-CanvasTextFunctions.measure = function(font, size, str) 
+CanvasTextFunctions.measure = function(font, size, str)
 {
     var total = 0;
     var len = str.length;
 
-    for (var i = 0; i < len; i++) 
+    for (var i = 0; i < len; i++)
 	{
 		var c = CanvasTextFunctions.letter(str.charAt(i));
-		if (c) 
+		if (c)
 		{
 			total += c.width * size / 25.0;
 		}
@@ -144,7 +144,7 @@ CanvasTextFunctions.measure = function(font, size, str)
     return total;
 };
 
-CanvasTextFunctions.draw = function(ctx,font,size,x,y,str) 
+CanvasTextFunctions.draw = function(ctx,font,size,x,y,str)
 {
     var total = 0;
     var len = str.length;
@@ -153,32 +153,32 @@ CanvasTextFunctions.draw = function(ctx,font,size,x,y,str)
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineWidth = 2.0 * mag;
-	ctx.strokeStyle = "black";
+	ctx.strokeStyle = "#c5c8c6";
 
-    for (var i = 0; i < len; i++) 
+    for (var i = 0; i < len; i++)
 	{
 		var c = CanvasTextFunctions.letter( str.charAt(i));
 		if (!c)
 		{
-			continue;	
-		} 
+			continue;
+		}
 		ctx.beginPath();
 		var penUp = 1;
 		var needStroke = 0;
-		for (var j = 0; j < c.points.length; j++) 
+		for (var j = 0; j < c.points.length; j++)
 		{
 		    var a = c.points[j];
-		    if ( a[0] === -1 && a[1] === -1) 
+		    if ( a[0] === -1 && a[1] === -1)
 			{
 				penUp = 1;
 				continue;
 		    }
-		    if ( penUp) 
+		    if ( penUp)
 			{
 				ctx.moveTo( x + a[0]*mag, y - a[1]*mag);
 				penUp = false;
-		    } 
-			else 
+		    }
+			else
 			{
 				ctx.lineTo( x + a[0]*mag, y - a[1]*mag);
 		    }
@@ -190,18 +190,18 @@ CanvasTextFunctions.draw = function(ctx,font,size,x,y,str)
     return total;
 };
 
-CanvasTextFunctions.enable = function(ctx) 
+CanvasTextFunctions.enable = function(ctx)
 {
     ctx.drawText = function(font,size,x,y,text) { return CanvasTextFunctions.draw( ctx, font,size,x,y,text); };
     ctx.measureText = function(font,size,text) { return CanvasTextFunctions.measure( font,size,text); };
     ctx.fontAscent = function(font,size) { return CanvasTextFunctions.ascent(font,size); };
     ctx.fontDescent = function(font,size) { return CanvasTextFunctions.descent(font,size); };
-    ctx.drawTextRight = function(font,size,x,y,text) {  
+    ctx.drawTextRight = function(font,size,x,y,text) {
 		var w = CanvasTextFunctions.measure(font,size,text);
-		return CanvasTextFunctions.draw( ctx, font,size,x-w,y,text); 
+		return CanvasTextFunctions.draw( ctx, font,size,x-w,y,text);
     };
-    ctx.drawTextCenter = function(font,size,x,y,text) { 
+    ctx.drawTextCenter = function(font,size,x,y,text) {
 		var w = CanvasTextFunctions.measure(font,size,text);
-		return CanvasTextFunctions.draw( ctx, font,size,x-w/2,y,text); 
+		return CanvasTextFunctions.draw( ctx, font,size,x-w/2,y,text);
     };
 };

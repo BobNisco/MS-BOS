@@ -170,6 +170,8 @@ function shellInit() {
         var input = document.getElementById("taProgramInput").value;
         if (input.match(/^[0-9A-F]/i)) {
             _StdIn.putText("No errors. Good luck running it though :)");
+            _Memory.loadProgram(input, 0);
+            _Memory.printToScreen();
         } else {
             _StdIn.putText("What kind of input is that!?");
         }

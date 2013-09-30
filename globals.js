@@ -26,7 +26,7 @@ var KEYBOARD_IRQ = 1;
 //
 var _CPU = null;
 
-var _MEMORY = null;
+var _Memory = null;
 
 var _OSclock = 0;       // Page 23.
 

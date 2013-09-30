@@ -31,6 +31,27 @@ Memory.prototype.init = function() {
 	}
 }
 
+// Loads the program into memory at a given location.
+Memory.prototype.loadProgram = function(program, location) {
+	var splitProgram = program.split(' '),
+		offsetLocation = location * 256;
+
+	this.clearProgramSection(location);
+
+	for (var i = 0; i < splitProgram.length; i++) {
+		this.data[i + offsetLocation] = splitProgram[i];
+	}
+}
+
+// Clears the program section for the given location.
+Memory.prototype.clearProgramSection = function(location) {
+	var offsetLocation = location * 256;
+
+	for (var i = 0; i < 256; i++) {
+		this.data[i + offsetLocation] = "00";
+	}
+}
+
 // Function to print out all of the memory to the memory div
 Memory.prototype.printToScreen = function() {
 	var memoryDiv = $('#divMemory'),
