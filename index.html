@@ -3,7 +3,9 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<meta name="author"             content="Bob Nisco" />
-		<link rel="stylesheet" href="ms-bos.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="styles/vendor/bootstrap.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="styles/vendor/flat-ui.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="styles/ms-bos.css" type="text/css" media="screen" />
 		<title>MS-BOS</title>
 
 		<!-- Globals CONSTANTS and _Variables. Must included be first. -->
@@ -30,43 +32,65 @@
 		<!-- Other Routines -->
 		<script type="text/javascript" src="scripts/utils.js"></script>
 		<script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>
+		<script type="text/javascript" src="scripts/vendor/bootstrap.min.js"></script>
 	</head>
 
 	<body onload="hostInit();">
-		<div id="divMain" class="column pull-left">
-			<div id="divButtonBar">
-				<input type="button" id="btnStartOS" name="brnStartOS" class="normal_button" value="Start" tabindex="0" onclick="hostBtnStartOS_click(this);">
-				<input type="button" id="btnHaltOS" name="brnHaltOS" class="normal_button" disabled="disabled" value="Halt" tabindex="1" onclick="hostBtnHaltOS_click(this);">
-				<input type="button" id="btnReset" name="brnReset" class="normal_button" disabled="disabled" value="Reset" tabindex="2" onclick="hostBtnReset_click(this);">
-			</div>
-			<div id="taskbar">
-				<span id="taskbar-datetime"></span>
-				<span id="taskbar-status" class="pull-right"></span>
-			</div>
-			<div id="divConsole">
-				<canvas id="display" width="500" height="550" tabindex="3"></canvas>
-			</div>
-		</div>
-
-		<div id="divStatuses" class="column">
-			<div id="divLog">
-				<label>Log</label>
-				<br>
-				<textarea name="taLog" id="taLog" rows="26" cols="48"></textarea>
-			</div>
-
-			<div id="divUserProgramInput">
-				<label>User Program Input</label>
-				<br>
-				<textarea name="taProgramInput" id="taProgramInput" rows="8" cols="48"></textarea>
-			</div>
-
-			<div id="divMemoryWrapper" class="column">
-				<label>Memory</label>
-				<div id="divMemory">
+		<div class="navbar navbar-default">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">MS-BOS</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="#" id="btnStartOS" name="brnStartOS" value="Start" tabindex="0" onclick="hostBtnStartOS_click(this);">Start</a></li>
+						<li><a href="#" id="btnHaltOS" name="brnHaltOS" value="Halt" class="disabled" tabindex="1" onclick="hostBtnHaltOS_click(this);">Halt</a></li>
+						<li><a href="#" id="btnReset" name="brnReset" value="Reset" class="disabled" tabindex="2" onclick="hostBtnReset_click(this);">Reset</a></li>
+					</ul>
 				</div>
 			</div>
 		</div>
+		<div class="container">
+			<div class="row" id="divMain">
+				<div class="col-md-6">
+					<div id="taskbar">
+						<span id="taskbar-datetime"></span>
+						<span id="taskbar-status" class="pull-right"></span>
+					</div>
+					<div id="divConsole">
+						<canvas id="display" width="500" height="500" tabindex="3"></canvas>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div id="divStatuses">
+						<div id="divLog">
+							<label>Log</label>
+							<br>
+							<textarea name="taLog" id="taLog" rows="26" cols="48"></textarea>
+						</div>
+
+						<div id="divUserProgramInput">
+							<label>User Program Input</label>
+							<br>
+							<textarea name="taProgramInput" id="taProgramInput" rows="8" cols="48"></textarea>
+						</div>
+
+						<div id="divMemoryWrapper" class="column">
+							<label>Memory</label>
+							<div id="divMemory">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<div class="clear"></div>
 
 		<p class="footerText clear">

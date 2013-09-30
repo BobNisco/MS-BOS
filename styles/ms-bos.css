@@ -1,12 +1,9 @@
 /* ms-bos.css */
 
 body {
-    background: #1d1f21;
-    font-family: Helvetica, Verdana, Arial, sans-serif;
     font-size: 12pt;
     font-weight: normal;
     font-style: normal;
-    color: #b5bd68;
 }
 
 h1 {
@@ -23,32 +20,28 @@ h2 {
 }
 
 h3 {
-    font-family: Helvetica, Verdana, Arial, sans-serif;
     font-size: 16pt;
     font-weight: normal;
     font-style: normal;
 }
 
 #display {
-    background-color: #1d1f21;
+    background-color: #eceef0;
     border: 2px solid #c5c8c6;
     cursor: default;
-}
-
-.normal_button {
-    width: 100px;
+    height: 500px;
+    min-height: 500px;
 }
 
 .footerText {
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 8pt;
     text-align: center;
 }
 
 #taskbar {
-    width: 492px;
-    height: 1.5em;
-    line-height: 1.5em;
+    width: 500px;
+    height: 2.0em;
+    line-height: 2.0em;
     padding-left: 4px;
     padding-right: 4px;
     margin: 4px;
@@ -78,12 +71,7 @@ h3 {
     margin:4px;
 }
 
-.column {
-    width: 520px;
-}
-
 #divStatuses {
-    margin-left:520px;
     padding-top: 28px;
 }
 
@@ -93,4 +81,15 @@ h3 {
     overflow: auto;
     width: 350px;
     font-family: "Lucida Console", Monaco, monospace;
+}
+
+.navbar .disabled {
+    color: #bdc3c7 !important;
+}
+
+/* Override some flat-ui styles */
+textarea {
+    font-size: 12pt;
+    line-height: 1em;
+    padding: 0px;
 }

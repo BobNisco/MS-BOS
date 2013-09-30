@@ -92,8 +92,8 @@ function hostBtnStartOS_click(btn)
     btn.disabled = true;
 
     // .. enable the Halt and Reset buttons ...
-    document.getElementById("btnHaltOS").disabled = false;
-    document.getElementById("btnReset").disabled = false;
+    $("#btnHaltOS").removeClass('disabled');
+    $("#btnReset").removeClass('disabled');
 
     // .. set focus on the OS console display ...
     document.getElementById("display").focus();
@@ -116,20 +116,24 @@ function hostBtnStartOS_click(btn)
 
 function hostBtnHaltOS_click(btn)
 {
-    hostLog("emergency halt", "host");
-    hostLog("Attempting Kernel shutdown.", "host");
-    // Call the OS shutdown routine.
-    krnShutdown();
-    // Stop the JavaScript interval that's simulating our clock pulse.
-    clearInterval(_hardwareClockID);
-    // TODO: Is there anything else we need to do here?
+    if (!$('#btnHaltOS').hasClass('disabled')) {
+        hostLog("emergency halt", "host");
+        hostLog("Attempting Kernel shutdown.", "host");
+        // Call the OS shutdown routine.
+        krnShutdown();
+        // Stop the JavaScript interval that's simulating our clock pulse.
+        clearInterval(_hardwareClockID);
+        // TODO: Is there anything else we need to do here?
+    }
 }
 
 function hostBtnReset_click(btn)
 {
-    // The easiest and most thorough way to do this is to reload (not refresh) the document.
-    location.reload(true);
-    // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
-    // be reloaded from the server. If it is false or not specified, the browser may reload the
-    // page from its cache, which is not what we want.
+    if (!$('#btnReset').hasClass('disabled')) {
+        // The easiest and most thorough way to do this is to reload (not refresh) the document.
+        location.reload(true);
+        // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
+        // be reloaded from the server. If it is false or not specified, the browser may reload the
+        // page from its cache, which is not what we want.
+    }
 }
