@@ -26,7 +26,11 @@ var KEYBOARD_IRQ = 1;
 //
 var _CPU = null;
 
-var _Memory = null;
+// We will need 3 sections of 256 bytes of memory each
+// to hold our 3 user programs.
+// 256 * 3 = 768. Mathematical!
+var MEMORY_SIZE = 768;
+var _MemoryManager = null;
 
 var _OSclock = 0;       // Page 23.
 
