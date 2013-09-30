@@ -16,8 +16,20 @@ function MemoryManager() {
 	this.printToScreen();
 }
 
+MemoryManager.prototype.loadProgram = function(program) {
+	var thisPcb = new Pcb();
+
+	// Put the PCB on the KernelProgramList
+	_KernelProgramList[thisPcb.pid] = thisPcb;
+	// Actually load the program into memory
+	// at location 0 (for now)
+	this.loadProgramIntoMemory(program, 0);
+	// Return the pid
+	return thisPcb.pid;
+}
+
 // Loads the program into memory at a given location.
-MemoryManager.prototype.loadProgram = function(program, location) {
+MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	var splitProgram = program.split(' '),
 		offsetLocation = location * 256;
 

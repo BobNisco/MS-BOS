@@ -50,6 +50,7 @@ var _Trace = true;
 var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
+var _KernelProgramList = null;
 
 // Standard input and output
 var _StdIn  = null;

@@ -39,6 +39,7 @@ function krnBootstrap()      // Page 8.
    //
    // ... more?
    //
+   _KernelProgramList = new Array();
 
    // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
    krnTrace("Enabling the interrupts.");
