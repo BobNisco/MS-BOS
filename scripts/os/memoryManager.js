@@ -17,7 +17,12 @@ function MemoryManager() {
 }
 
 MemoryManager.prototype.loadProgram = function(program) {
+	// Create a new PCB
 	var thisPcb = new Pcb();
+	// Set the base and limit of the program in the PCB
+	// TODO: make this work with offsets
+	thisPcb.base = 0;
+	thisPcb.limit = 255;
 
 	// Put the PCB on the KernelProgramList
 	_KernelProgramList[thisPcb.pid] = thisPcb;

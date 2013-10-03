@@ -20,6 +20,9 @@ function Pcb() {
 	this.xReg  = 0;     // X register
 	this.yReg  = 0;     // Y register
 	this.zFlag = 0;     // Z-ero flag (Think of it as "isZero".)
+	// For memory
+	this.base  = 0;     // Starting location of memory
+	this.limit = 0;     // Maximum location in memory
 }
 
 // A way of keeping track of the last pid
