@@ -56,6 +56,9 @@ var _KernelProgramList = null;
 var _StdIn  = null;
 var _StdOut = null;
 
+// Globals for currently executing program
+var _CurrentProgram = null;
+
 // UI
 var _Console = null;
 var _OsShell = null;

@@ -45,6 +45,12 @@ MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	}
 }
 
+// Returns the value stored at the given address.
+// Is used in the CPU Fetch stage
+MemoryManager.prototype.getMemoryAtAddress = function(address) {
+	return this.memory.data[address];
+}
+
 // Clears the program section for the given location.
 MemoryManager.prototype.clearProgramSection = function(location) {
 	var offsetLocation = location * 256;
