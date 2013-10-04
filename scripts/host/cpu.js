@@ -107,7 +107,7 @@ Cpu.prototype.loadAccumulatorFromMemory = function() {
 // STA
 // Store the accumulator in memory
 Cpu.prototype.storeAccumulatorInMemory = function() {
-	_MemoryManager.putDataAtAddress(this.Acc, this.getDataAtNextTwoBytes());
+	_MemoryManager.putDataAtAddress(this.Acc, this.getNextTwoBytes());
 };
 
 // ADC
@@ -177,14 +177,19 @@ Cpu.prototype.systemCall = function() {
 
 };
 
-// TODO: Think of a better function name
-Cpu.prototype.getDataAtNextTwoBytes = function() {
+// Returns the decimal representation of the next two bytes
+Cpu.prototype.getNextTwoBytes = function() {
 	// Because of the ordering of certain opcodes, we need to get the next 2 bytes
 	// then reverse the order and concatenate them to get the memory address we want.
 	var firstByte = _MemoryManager.getMemoryAtAddress(++this.PC),
 		secondByte = _MemoryManager.getMemoryAtAddress(++this.PC),
 		hex = (secondByte + firstByte),
-		decimal = _MemoryManager.translateAddress(hex),
-		data = _MemoryManager.getMemoryAtAddress(decimal);
-	return data;
-}
+		decimal = _MemoryManager.translateAddress(hex);
+	return decimal;
+};
+
+// TODO: Think of a better function name
+Cpu.prototype.getDataAtNextTwoBytes = function() {
+	// Gets the data at the next two bytes
+	return _MemoryManager.getMemoryAtAddress(this.getNextTwoBytes());
+};

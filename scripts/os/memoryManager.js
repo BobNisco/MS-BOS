@@ -53,7 +53,8 @@ MemoryManager.prototype.getMemoryAtAddress = function(address) {
 
 // Puts the data parameter in the given address
 MemoryManager.prototype.putDataAtAddress = function(data, address) {
-	this.memory.data[address] = data;
+	this.memory.data[address] = ('00' + data).slice(-2);
+	this.printToScreen();
 };
 
 // Translates memory at given hex location into base 10
