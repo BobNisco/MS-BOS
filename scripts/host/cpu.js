@@ -112,8 +112,10 @@ Cpu.prototype.storeAccumulatorInMemory = function() {
 
 // ADC
 // Add with carry
+// Adds contents of an address to the contents of the accumulator
+// and keeps the result in the accumulator
 Cpu.prototype.addWithCarry = function() {
-
+	this.Acc += this.getDataAtNextTwoBytes();
 };
 
 // LDX
