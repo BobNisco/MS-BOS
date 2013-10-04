@@ -65,7 +65,7 @@ Cpu.prototype.execute = function(instruction) {
 	} else if (instruction == 'A2') {
 		this.loadXConstant();
 	} else if (instruction == 'AE') {
-		this.loadXFromMemory
+		this.loadXFromMemory();
 	} else if (instruction == 'A0') {
 		this.loadYConstant();
 	} else if (instruction == 'AC') {
@@ -171,19 +171,39 @@ Cpu.prototype.break = function() {
 // Compare a byte in memory to the X reg
 // Sets the Z (zero) flag if equal
 Cpu.prototype.compareToX = function() {
-
+	// Get the data
+	var data = this.getDataAtNextTwoBytes();
+	if (this.Xreg === data) {
+		this.Zflag = 1;
+	} else {
+		this.Zflag = 0;
+	}
 };
 
 // BNE
 // Branch X bytes if Z flag = 0
 Cpu.prototype.branchNotEqual = function() {
-
+	if (this.Zflag === 0) {
+		var branchLocation = parseInt(_MemoryManager.getMemoryAtAddress(++this.PC), 16);
+		console.log(branchLocation);
+		// Since at the end of the execute cycle, we increment PC
+		// so, we're going to set PC to the branchLocation - 1
+		// so we don't overstep!
+		this.PC = branchLocation - 1;
+	}
 };
 
 // INC
 // Increment the value of a byte
 Cpu.prototype.increment = function() {
-
+	// Get the location and the data at that location
+	var location = this.getNextTwoBytes(),
+		data = _MemoryManager.getMemoryAtAddress(location);
+	// Convert from base 16 to 10 so we can increment it
+	data = parseInt(data, 16);
+	data++;
+	// Store the data back as hex
+	_MemoryManager.putDataAtAddress(data.toString(16), location);
 };
 
 // SYS
