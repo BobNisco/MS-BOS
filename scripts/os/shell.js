@@ -180,6 +180,24 @@ function shellInit() {
     };
     this.commandList[this.commandList.length] = sc;
 
+    // run
+    sc = new ShellCommand();
+    sc.command = "run";
+    sc.description = "<PID> - Runs the user program located at given PID";
+    sc.function = function(args) {
+        if (args.length <= 0) {
+            _StdIn.putText("Please specify a PID.")
+            _StdIn.advanceLine();
+            return;
+        }
+        if (_KernelProgramList[args[0]]) {
+            _CurrentProgram = _KernelProgramList[args[0]];
+            _CPU.init();
+            _CPU.isExecuting = true;
+        }
+    };
+    this.commandList[this.commandList.length] = sc;
+
     // status
     sc = new ShellCommand();
     sc.command = "status";

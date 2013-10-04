@@ -35,11 +35,21 @@ Cpu.prototype.cycle = function() {
 	krnTrace("CPU cycle");
 	// TODO: Accumulate CPU usage and profiling statistics here.
 	// Do the real work here. Be sure to set this.isExecuting appropriately.
+	this.execute(this.fetch());
+	this.printToScreen();
+};
+
+Cpu.prototype.printToScreen = function() {
+	$('#pcDisplay').html(this.PC);
+	$('#accDisplay').html(this.Acc);
+	$('#xRegDisplay').html(this.Xreg);
+	$('#yRegDisplay').html(this.Yreg);
+	$('#zRegDisplay').html(this.Zflag);
 };
 
 Cpu.prototype.fetch = function() {
 	return _MemoryManager.getMemoryAtAddress(this.PC);
-}
+};
 
 Cpu.prototype.execute = function(instruction) {
 	if (instruction == 'A9') {
@@ -88,4 +98,12 @@ Cpu.prototype.execute = function(instruction) {
 	} else {
 		// TODO: Error handling
 	}
-}
+};
+
+Cpu.prototype.loadAccumulatorConstant = function() {
+	console.log('loadAccumulatorConstant');
+	console.log(this.PC);
+	console.log(_MemoryManager.getMemoryAtAddress(++this.PC));
+	this.Acc = _MemoryManager.getMemoryAtAddress(++this.PC);
+	this.PC++;
+};

@@ -101,6 +101,7 @@ function hostBtnStartOS_click(btn)
     // ... Create and initialize the CPU ...
     _CPU = new Cpu();
     _CPU.init();
+    _CPU.printToScreen();
 
     // ... Create and initialize the memory ...
     _MemoryManager = new MemoryManager();
