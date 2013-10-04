@@ -121,25 +121,31 @@ Cpu.prototype.addWithCarry = function() {
 // LDX
 // Load the X register with a constant
 Cpu.prototype.loadXConstant = function () {
-
+	// Get the memory at the next address (increment PC)
+	// Translate the value from hex to decimal and store it in the X register
+	this.Xreg = _MemoryManager.translateAddress(_MemoryManager.getMemoryAtAddress(++this.PC));
 };
 
 // LDX
 // Load the X register from memory
 Cpu.prototype.loadXFromMemory = function() {
-
+	// Load the X register with the data from memory
+	this.Xreg = this.getDataAtNextTwoBytes();
 };
 
 // LDY
 // Load the Y register with a constant
 Cpu.prototype.loadYConstant = function () {
-
+	// Get the memory at the next address (increment PC)
+	// Translate the value from hex to decimal and store it in the Y register
+	this.Yreg = _MemoryManager.translateAddress(_MemoryManager.getMemoryAtAddress(++this.PC));
 };
 
 // LDY
 // Load the Y register from memory
 Cpu.prototype.loadYFromMemory = function() {
-
+	// Load the Y register with the data from memory
+	this.Yreg = this.getDataAtNextTwoBytes();
 };
 
 // NOP
