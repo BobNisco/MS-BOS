@@ -48,62 +48,127 @@ Cpu.prototype.printToScreen = function() {
 };
 
 Cpu.prototype.fetch = function() {
+	console.log("PC: " + this.PC);
+	console.log("Mem At PC: " + _MemoryManager.getMemoryAtAddress(this.PC));
 	return _MemoryManager.getMemoryAtAddress(this.PC);
 };
 
 Cpu.prototype.execute = function(instruction) {
 	if (instruction == 'A9') {
-		// LDA
-		// Load the accumulator with a constant
+		this.loadAccumulatorConstant();
 	} else if (instruction == 'AD') {
-		// LDA
-		// Load the accumulator from memory
+		this.loadAccumulatorFromMemory();
 	} else if (instruction == '8D') {
-		// STA
-		// Store the accumulator in memory
+		this.storeAccumulatorInMemory();
 	} else if (instruction == '6D') {
-		// ADC
-		// Add with carry
+		this.addWithCarry();
 	} else if (instruction == 'A2') {
-		// LDX
-		// Load the X register with a constant
+		this.loadXConstant();
 	} else if (instruction == 'AE') {
-		// LDX
-		// Load the X register from memory
+		this.loadXFromMemory
 	} else if (instruction == 'A0') {
-		// LDY
-		// Load the Y register with a constant
+		this.loadYConstant();
 	} else if (instruction == 'AC') {
-		// LDY
-		// Load the Y register from memory
+		this.loadYFromMemory();
 	} else if (instruction == 'EA') {
-		// NOP
-		// No Operation
+		this.noOperation();
 	} else if (instruction == '00') {
-		// BRK
-		// Break (which is really a system call)
+		this.break();
 	} else if (instruction == 'EC') {
-		// CPX
-		// Compare a byte in memory to the X reg
-		// Sets the Z (zero) flag if equal
+		this.compareToX();
 	} else if (instruction == 'D0') {
-		// BNE
-		// Branch X bytes if Z flag = 0
+		this.branchNotEqual();
 	} else if (instruction == 'EE') {
-		// INC
-		// Increment the value of a byte
+		this.increment();
 	} else if (instruction == 'FF') {
-		// SYS
-		// System Call
+		this.systemCall();
 	} else {
 		// TODO: Error handling
 	}
 };
 
+// LDA
+// Load the accumulator with a constant
 Cpu.prototype.loadAccumulatorConstant = function() {
-	console.log('loadAccumulatorConstant');
-	console.log(this.PC);
-	console.log(_MemoryManager.getMemoryAtAddress(++this.PC));
 	this.Acc = _MemoryManager.getMemoryAtAddress(++this.PC);
 	this.PC++;
+};
+
+// LDA
+// Load the accumulator from memory
+Cpu.prototype.loadAccumulatorFromMemory = function() {
+
+};
+
+// STA
+// Store the accumulator in memory
+Cpu.prototype.storeAccumulatorInMemory = function() {
+
+};
+
+// ADC
+// Add with carry
+Cpu.prototype.addWithCarry = function() {
+
+};
+
+// LDX
+// Load the X register with a constant
+Cpu.prototype.loadXConstant = function () {
+
+};
+
+// LDX
+// Load the X register from memory
+Cpu.prototype.loadXFromMemory = function() {
+
+};
+
+// LDY
+// Load the Y register with a constant
+Cpu.prototype.loadYConstant = function () {
+
+};
+
+// LDY
+// Load the Y register from memory
+Cpu.prototype.loadYFromMemory = function() {
+
+};
+
+// NOP
+// No Operation
+Cpu.prototype.noOperation = function() {
+
+};
+
+// BRK
+// Break (which is really a system call)
+Cpu.prototype.break = function() {
+
+};
+
+// CPX
+// Compare a byte in memory to the X reg
+// Sets the Z (zero) flag if equal
+Cpu.prototype.compareToX = function() {
+
+};
+
+// BNE
+// Branch X bytes if Z flag = 0
+Cpu.prototype.branchNotEqual = function() {
+
+};
+
+// INC
+// Increment the value of a byte
+Cpu.prototype.increment = function() {
+
+};
+
+// SYS
+// System Call
+Cpu.prototype.systemCall = function() {
+
 };
