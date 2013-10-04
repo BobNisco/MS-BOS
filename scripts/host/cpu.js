@@ -151,12 +151,19 @@ Cpu.prototype.loadYFromMemory = function() {
 // NOP
 // No Operation
 Cpu.prototype.noOperation = function() {
-
+	// You really thought there'd be something here?
 };
 
 // BRK
 // Break (which is really a system call)
 Cpu.prototype.break = function() {
+	// Update the PCB for this program
+	_CurrentProgram.pc = this.PC;
+	_CurrentProgram.acc = this.Acc;
+	_CurrentProgram.xReg = this.Xreg;
+	_CurrentProgram.yReg = this.Yreg;
+	_CurrentProgram.zFlag = this.Zflag;
+	// Set the CPU to not executing
 	this.isExecuting = false;
 };
 
