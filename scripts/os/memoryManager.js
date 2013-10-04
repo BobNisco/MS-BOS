@@ -49,7 +49,17 @@ MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 // Is used in the CPU Fetch stage
 MemoryManager.prototype.getMemoryAtAddress = function(address) {
 	return this.memory.data[address];
-}
+};
+
+// Puts the data parameter in the given address
+MemoryManager.prototype.putDataAtAddress = function(data, address) {
+	this.memory.data[address] = data;
+};
+
+// Translates memory at given hex location into base 10
+MemoryManager.prototype.translateAddress = function(hex) {
+	return parseInt(hex, 16);
+};
 
 // Clears the program section for the given location.
 MemoryManager.prototype.clearProgramSection = function(location) {
@@ -58,7 +68,7 @@ MemoryManager.prototype.clearProgramSection = function(location) {
 	for (var i = 0; i < 256; i++) {
 		this.memory.data[i + offsetLocation] = "00";
 	}
-}
+};
 
 // Function to print out all of the memory to the memory div
 MemoryManager.prototype.printToScreen = function() {
@@ -74,7 +84,7 @@ MemoryManager.prototype.printToScreen = function() {
 		output += this.memory.data[i] + ' ';
 	}
 	memoryDiv.html(output);
-}
+};
 
 // WARNING: Possible over-engineering ahead:
 // Formats the leading hex digits for each row in the Memory div.
@@ -90,9 +100,9 @@ MemoryManager.prototype.formatHexRowHeader = function(baseTenNum, numOfDigits) {
 		paddedNumber = '0' + paddedNumber;
 	}
 	return '0x' + paddedNumber;
-}
+};
 
 // Returns the number of hex digits in the number of bytes
 MemoryManager.prototype.getNumberOfDigitsOfBytes = function() {
 	return ('' + this.memory.bytes.toString(16)).length;
-}
+};

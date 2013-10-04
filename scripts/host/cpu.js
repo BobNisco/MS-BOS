@@ -85,25 +85,29 @@ Cpu.prototype.execute = function(instruction) {
 	} else {
 		// TODO: Error handling
 	}
+	// Onwards and upwards!
+	this.PC++;
 };
 
 // LDA
 // Load the accumulator with a constant
 Cpu.prototype.loadAccumulatorConstant = function() {
-	this.Acc = _MemoryManager.getMemoryAtAddress(++this.PC);
-	this.PC++;
+	// Get the memory at the next address (increment PC)
+	// Translate the value from hex to decimal and store it in the accumulator
+	this.Acc = _MemoryManager.translateAddress(_MemoryManager.getMemoryAtAddress(++this.PC));
 };
 
 // LDA
 // Load the accumulator from memory
 Cpu.prototype.loadAccumulatorFromMemory = function() {
-
+	// Load the accumulator with the data from memory
+	this.Acc = this.getDataAtNextTwoBytes();
 };
 
 // STA
 // Store the accumulator in memory
 Cpu.prototype.storeAccumulatorInMemory = function() {
-
+	_MemoryManager.putDataAtAddress(this.Acc, this.getDataAtNextTwoBytes());
 };
 
 // ADC
@@ -145,7 +149,7 @@ Cpu.prototype.noOperation = function() {
 // BRK
 // Break (which is really a system call)
 Cpu.prototype.break = function() {
-
+	this.isExecuting = false;
 };
 
 // CPX
@@ -172,3 +176,15 @@ Cpu.prototype.increment = function() {
 Cpu.prototype.systemCall = function() {
 
 };
+
+// TODO: Think of a better function name
+Cpu.prototype.getDataAtNextTwoBytes = function() {
+	// Because of the ordering of certain opcodes, we need to get the next 2 bytes
+	// then reverse the order and concatenate them to get the memory address we want.
+	var firstByte = _MemoryManager.getMemoryAtAddress(++this.PC),
+		secondByte = _MemoryManager.getMemoryAtAddress(++this.PC),
+		hex = (secondByte + firstByte),
+		decimal = _MemoryManager.translateAddress(hex),
+		data = _MemoryManager.getMemoryAtAddress(decimal);
+	return data;
+}
