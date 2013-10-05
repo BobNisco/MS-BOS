@@ -48,8 +48,6 @@ Cpu.prototype.printToScreen = function() {
 };
 
 Cpu.prototype.fetch = function() {
-	console.log("PC: " + this.PC);
-	console.log("Mem At PC: " + _MemoryManager.getMemoryAtAddress(this.PC));
 	return _MemoryManager.getMemoryAtAddress(this.PC);
 };
 
@@ -185,7 +183,6 @@ Cpu.prototype.compareToX = function() {
 Cpu.prototype.branchNotEqual = function() {
 	if (this.Zflag === 0) {
 		var branchLocation = parseInt(_MemoryManager.getMemoryAtAddress(++this.PC), 16);
-		console.log(branchLocation);
 		// Since at the end of the execute cycle, we increment PC
 		// so, we're going to set PC to the branchLocation - 1
 		// so we don't overstep!
