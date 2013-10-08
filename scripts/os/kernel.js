@@ -136,6 +136,10 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
         case SYS_OPCODE_IRQ:
             _StdIn.handleSysOpCode();
             break;
+        case STEP_CPU_IRQ:
+            // Do a single CPU cycle
+            _CPU.cycle();
+            break;
         default:
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }
@@ -190,7 +194,6 @@ function krnTrace(msg)
 function krnTrapError(msg)
 {
     hostLog("OS ERROR - TRAP: " + msg);
-    // TODO: Display error on console, perhaps in some sort of colored screen. (Perhaps blue?)
     _Console.drawBSOD(msg);
     krnShutdown();
 }

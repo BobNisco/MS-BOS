@@ -5,7 +5,7 @@
 
    Routines for the hardware simulation, NOT for our client OS itself. In this manner, it's A LITTLE BIT like a hypervisor,
    in that the Document environment inside a browser is the "bare metal" (so to speak) for which we write code that
-   hosts our client OS. But that analogy only goes so far, and the lines are blurred, because we are using JavaScript in
+   s our client OS. But that analogy only goes so far, and the lines are blurred, because we are using JavaScript in
    both the host and client environments.
 
    This (and other host/simulation scripts) is the only place that we should see "web" code, like
@@ -134,4 +134,11 @@ function hostBtnReset_click(btn)
         // be reloaded from the server. If it is false or not specified, the browser may reload the
         // page from its cache, which is not what we want.
     }
+}
+
+function hostBtnStep_click(btn) {
+    if (!$('#btnStep').hasClass('disabled')) {
+        // Make a software interrupt to step ahead 1 cycle
+        _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ));
+    }   
 }

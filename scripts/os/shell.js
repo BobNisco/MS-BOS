@@ -193,7 +193,9 @@ function shellInit() {
         if (_KernelProgramList[args[0]]) {
             _CurrentProgram = _KernelProgramList[args[0]];
             _CPU.init();
-            _CPU.isExecuting = true;
+            if (!_StepEnabled) { 
+                _CPU.isExecuting = true;
+            }
         }
     };
     this.commandList[this.commandList.length] = sc;
@@ -217,6 +219,32 @@ function shellInit() {
         }
     };
     this.commandList[this.commandList.length] = sc;
+
+    // step
+    sc = new ShellCommand();
+    sc.command = "step";
+    sc.description = "<boolean> - Turns step on or off";
+    sc.function = function(args) {
+        if (args.length > 0)
+        {
+            var btnStep = $('#btnStep');
+            if (args[0] === 'true') {
+                btnStep.removeClass('disabled');
+                _StepEnabled = true;
+            } else if (args[0] === 'false') {
+                btnStep.addClass('disabled');
+                _StepEnabled = false;
+            } else {
+                _StdIn.putText("Usage: step <boolean>  Please supply a boolean value.");
+            }
+        }
+        else
+        {
+            _StdIn.putText("Usage: step <boolean>  Please supply a boolean value.");
+        }
+    };
+    this.commandList[this.commandList.length] = sc;
+
 
     // processes - list the running processes and their IDs
     // kill <id> - kills the specified process id.
