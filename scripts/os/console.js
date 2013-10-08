@@ -153,7 +153,7 @@ function CLIconsole() {
             // Iterate until we hit the null termination code
             while (curData !== "00") {
                 // Convert the data into char data
-                output += String.fromCharCode(parseInt(curData, 16));
+                output += String.fromCharCode(_MemoryManager.translateAddress(curData));
                 // Move the pointer and get the next byte of data
                 curData = _MemoryManager.getMemoryAtAddress(++curPointer);
             }

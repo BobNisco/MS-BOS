@@ -113,7 +113,7 @@ Cpu.prototype.storeAccumulatorInMemory = function() {
 // Adds contents of an address to the contents of the accumulator
 // and keeps the result in the accumulator
 Cpu.prototype.addWithCarry = function() {
-	this.Acc += parseInt(this.getDataAtNextTwoBytes(), 16);
+	this.Acc += _MemoryManager.translateAddress(this.getDataAtNextTwoBytes());
 };
 
 // LDX
@@ -183,7 +183,7 @@ Cpu.prototype.compareToX = function() {
 Cpu.prototype.branchNotEqual = function() {
 	if (this.Zflag === 0) {
 		// We will increment PC to the position at the next byte
-		this.PC += parseInt(_MemoryManager.getMemoryAtAddress(++this.PC), 16) + 1;
+		this.PC += _MemoryManager.translateAddress(_MemoryManager.getMemoryAtAddress(++this.PC)) + 1;
 		// Check that we haven't gone past our memory limit
 		if (this.PC >= 256) {
 			// Fix it, if we have
