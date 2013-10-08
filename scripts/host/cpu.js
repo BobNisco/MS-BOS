@@ -215,17 +215,25 @@ Cpu.prototype.increment = function() {
 // System Call
 Cpu.prototype.systemCall = function() {
 	if (this.Xreg === 1) {
+		// Print the contents of the Y register
 		_StdIn.putText(this.Yreg.toString());
 		_StdIn.advanceLine();
 		_OsShell.putPrompt();
 	} else if (this.Xreg === 2) {
+		// Print the 00-terminated string stored at the address in the Y-register
 		var output = "",
+			// The pointer to the location in memory
 			curPointer = this.Yreg,
+			// The current data at the location in memory
 			curData = _MemoryManager.getMemoryAtAddress(curPointer);
 
+		// Iterate until we hit the null termination code
 		while (curData !== "00") {
+			console.log("CURRENT DATA: " + curData);
 			console.log(curPointer + " " + String.fromCharCode(curData));
+			// Convert the data into char data
 			output += String.fromCharCode(curData);
+			// Move the pointer and get the next byte of data
 			curData = _MemoryManager.getMemoryAtAddress(++curPointer);
 		}
 		_StdIn.putText(output);
