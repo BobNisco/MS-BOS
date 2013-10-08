@@ -142,3 +142,15 @@ function hostBtnStep_click(btn) {
         _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ));
     }
 }
+
+// jQuery's ondocument ready handler function
+$(document).ready(function() {
+    // Bind a function to the user-program buttons
+    $('.user-program').on('click', function(e) {
+        var el = $(this);
+        e.preventDefault();
+        // Set the userInput textarea to the program
+        // on the clicked button.
+        $('#taProgramInput').html(el.data('program'));
+    });
+});
