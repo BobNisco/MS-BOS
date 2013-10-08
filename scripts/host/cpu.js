@@ -52,7 +52,6 @@ Cpu.prototype.fetch = function() {
 };
 
 Cpu.prototype.execute = function(instruction) {
-	console.log(this.PC + " : " + instruction);
 	if (instruction == 'A9') {
 		this.loadAccumulatorConstant();
 	} else if (instruction == 'AD') {
@@ -106,7 +105,7 @@ Cpu.prototype.loadAccumulatorFromMemory = function() {
 // STA
 // Store the accumulator in memory
 Cpu.prototype.storeAccumulatorInMemory = function() {
-	_MemoryManager.putDataAtAddress(this.Acc, this.getNextTwoBytes());
+	_MemoryManager.putDataAtAddress(this.Acc.toString(16), this.getNextTwoBytes());
 };
 
 // ADC
@@ -171,9 +170,8 @@ Cpu.prototype.break = function() {
 // Sets the Z (zero) flag if equal
 Cpu.prototype.compareToX = function() {
 	// Get the data
-	console.log("CPX: " + parseInt(_MemoryManager.getMemoryAtAddress(this.PC), 16));
 	var data = this.getDataAtNextTwoBytes();
-	if (this.Xreg === data) {
+	if (this.Xreg == data) {
 		this.Zflag = 1;
 	} else {
 		this.Zflag = 0;

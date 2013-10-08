@@ -140,5 +140,5 @@ function hostBtnStep_click(btn) {
     if (!$('#btnStep').hasClass('disabled')) {
         // Make a software interrupt to step ahead 1 cycle
         _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ));
-    }   
+    }
 }

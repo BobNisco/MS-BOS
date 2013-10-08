@@ -152,10 +152,8 @@ function CLIconsole() {
 
             // Iterate until we hit the null termination code
             while (curData !== "00") {
-                console.log("CURRENT DATA: " + curData);
-                console.log(curPointer + " " + String.fromCharCode(curData));
                 // Convert the data into char data
-                output += String.fromCharCode(curData);
+                output += String.fromCharCode(parseInt(curData, 16));
                 // Move the pointer and get the next byte of data
                 curData = _MemoryManager.getMemoryAtAddress(++curPointer);
             }
