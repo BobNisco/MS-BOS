@@ -52,6 +52,7 @@ Cpu.prototype.fetch = function() {
 };
 
 Cpu.prototype.execute = function(instruction) {
+	console.log(this.PC + " : " + instruction);
 	if (instruction == 'A9') {
 		this.loadAccumulatorConstant();
 	} else if (instruction == 'AD') {
@@ -170,6 +171,7 @@ Cpu.prototype.break = function() {
 // Sets the Z (zero) flag if equal
 Cpu.prototype.compareToX = function() {
 	// Get the data
+	console.log("CPX: " + parseInt(_MemoryManager.getMemoryAtAddress(this.PC), 16));
 	var data = this.getDataAtNextTwoBytes();
 	if (this.Xreg === data) {
 		this.Zflag = 1;
@@ -182,11 +184,17 @@ Cpu.prototype.compareToX = function() {
 // Branch X bytes if Z flag = 0
 Cpu.prototype.branchNotEqual = function() {
 	if (this.Zflag === 0) {
-		var branchLocation = parseInt(_MemoryManager.getMemoryAtAddress(++this.PC), 16);
-		// Since at the end of the execute cycle, we increment PC
-		// so, we're going to set PC to the branchLocation - 1
-		// so we don't overstep!
-		this.PC = branchLocation - 1;
+		// We will increment PC to the position at the next byte
+		this.PC += parseInt(_MemoryManager.getMemoryAtAddress(++this.PC), 16) + 1;
+		// Check that we haven't gone past our memory limit
+		if (this.PC >= 256) {
+			// Fix it, if we have
+			this.PC -= 256;
+		}
+	} else {
+		// This is a failsafe. If Zflag is not 0, we don't want
+		// to evaluate the next byte
+		++this.PC;
 	}
 };
 
@@ -206,7 +214,24 @@ Cpu.prototype.increment = function() {
 // SYS
 // System Call
 Cpu.prototype.systemCall = function() {
+	if (this.Xreg === 1) {
+		_StdIn.putText(this.Yreg.toString());
+		_StdIn.advanceLine();
+		_OsShell.putPrompt();
+	} else if (this.Xreg === 2) {
+		var output = "",
+			curPointer = this.Yreg,
+			curData = _MemoryManager.getMemoryAtAddress(curPointer);
 
+		while (curData !== "00") {
+			console.log(curPointer + " " + String.fromCharCode(curData));
+			output += String.fromCharCode(curData);
+			curData = _MemoryManager.getMemoryAtAddress(++curPointer);
+		}
+		_StdIn.putText(output);
+		_StdIn.advanceLine();
+		_OsShell.putPrompt();
+	}
 };
 
 // Returns the decimal representation of the next two bytes
