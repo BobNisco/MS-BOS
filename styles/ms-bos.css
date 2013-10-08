@@ -75,10 +75,11 @@ h3 {
 }
 
 #divMemory {
-    max-height: 200px;
-    height: 200px;
+    display:block;
+    max-height: 250px;
+    height: 250px;
     overflow: auto;
-    width: 350px;
+    width: 400px;
     font-family: "Lucida Console", Monaco, monospace;
 }
 

@@ -75,17 +75,18 @@ MemoryManager.prototype.clearProgramSection = function(location) {
 // Function to print out all of the memory to the memory div
 MemoryManager.prototype.printToScreen = function() {
 	var memoryDiv = $('#divMemory'),
-		output = "",
+		output = "<tbody>",
 		numDigits = this.getNumberOfDigitsOfBytes();
 
 	for (var i = 0; i < this.memory.bytes; i++) {
 		// We are going to print rows of 8 columns each
 		if (i % 8 == 0) {
-			output += '<br>' + this.formatHexRowHeader(i, numDigits) + ' ';
+			output += '</tr><tr><td>' + this.formatHexRowHeader(i, numDigits) + '</td>';
 		}
-		output += this.memory.data[i] + ' ';
+		output += '<td> ' + this.memory.data[i] + '</td>';
 	}
-	memoryDiv.html(output);
+	output += "</tbody>";
+	memoryDiv.find('tbody').replaceWith(output);
 };
 
 // WARNING: Possible over-engineering ahead:
