@@ -138,7 +138,8 @@ function CLIconsole() {
     this.handleSysOpCode = function() {
         if (_CPU.Xreg === 1) {
             // Print the contents of the Y register
-            this.putText(_CPU.Yreg.toString());
+            // Convert it to an integer first to strip the leading zeroes
+            this.putText(parseInt(_CPU.Yreg).toString());
             this.advanceLine();
             _OsShell.putPrompt();
         } else if (_CPU.Xreg === 2) {
