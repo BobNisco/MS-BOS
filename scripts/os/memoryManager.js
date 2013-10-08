@@ -29,6 +29,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 	// Actually load the program into memory
 	// at location 0 (for now)
 	this.loadProgramIntoMemory(program, 0);
+	thisPcb.printToScreen();
 	// Return the pid
 	return thisPcb.pid;
 }
