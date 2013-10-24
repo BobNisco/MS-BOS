@@ -186,16 +186,15 @@ function shellInit() {
     sc.description = "<PID> - Runs the user program located at given PID";
     sc.function = function(args) {
         if (args.length <= 0) {
-            _StdIn.putText("Please specify a PID.")
+            _StdIn.putText("Usage: run <PID>  Please specify a valid PID.");
             _StdIn.advanceLine();
-            return;
-        }
-        if (_KernelProgramList[args[0]]) {
+        } else if (!_KernelProgramList[args[0]]) {
+            _StdIn.putText("Please specify a valid PID.");
+            _StdIn.advanceLine();
+        } else {
             _CurrentProgram = _KernelProgramList[args[0]];
             _CPU.init();
-            if (!_StepEnabled) { 
-                _CPU.isExecuting = true;
-            }
+            _CPU.isExecuting = true;
         }
     };
     this.commandList[this.commandList.length] = sc;
