@@ -36,15 +36,7 @@ Cpu.prototype.cycle = function() {
 	// TODO: Accumulate CPU usage and profiling statistics here.
 	// Do the real work here. Be sure to set this.isExecuting appropriately.
 	this.execute(this.fetch());
-	this.printToScreen();
-};
-
-Cpu.prototype.printToScreen = function() {
-	$('#pcDisplay').html(this.PC);
-	$('#accDisplay').html(this.Acc);
-	$('#xRegDisplay').html(this.Xreg);
-	$('#yRegDisplay').html(this.Yreg);
-	$('#zRegDisplay').html(this.Zflag);
+	printCpuToScreen();
 };
 
 Cpu.prototype.fetch = function() {

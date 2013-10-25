@@ -101,7 +101,7 @@ function hostBtnStartOS_click(btn)
     // ... Create and initialize the CPU ...
     _CPU = new Cpu();
     _CPU.init();
-    _CPU.printToScreen();
+    printCpuToScreen();
 
     // ... Create and initialize the memory ...
     _MemoryManager = new MemoryManager();
@@ -142,6 +142,14 @@ function hostBtnStep_click(btn) {
         _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ));
     }
 }
+
+function printCpuToScreen() {
+    $('#pcDisplay').html(_CPU.PC);
+    $('#accDisplay').html(_CPU.Acc);
+    $('#xRegDisplay').html(_CPU.Xreg);
+    $('#yRegDisplay').html(_CPU.Yreg);
+    $('#zRegDisplay').html(_CPU.Zflag);
+};
 
 // jQuery's ondocument ready handler function
 $(document).ready(function() {
