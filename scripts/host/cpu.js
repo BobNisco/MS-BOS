@@ -74,7 +74,8 @@ Cpu.prototype.execute = function(instruction) {
 	} else if (instruction === 'FF') {
 		this.systemCall();
 	} else {
-		// TODO: Error handling
+		// Make a software interrupt to handle this unknown opcode
+        _KernelInterruptQueue.enqueue(new Interrupt(UNKNOWN_OPCODE_IRQ));
 	}
 	// Onwards and upwards!
 	this.PC++;

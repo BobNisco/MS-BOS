@@ -140,6 +140,13 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
             // Do a single CPU cycle
             _CPU.cycle();
             break;
+        case UNKNOWN_OPCODE_IRQ:
+            // Handling an unknown opcode
+            // Stop the CPU from executing
+            _CPU.isExecuting = false;
+            // Log the error
+            krnTrace("Unknown opcode: " + _MemoryManager.getMemoryAtAddress(_CPU.PC - 1));
+            break;
         default:
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
     }
