@@ -80,7 +80,7 @@ MemoryManager.prototype.printToScreen = function() {
 
 	for (var i = 0; i < this.memory.bytes; i++) {
 		// We are going to print rows of 8 columns each
-		if (i % 8 == 0) {
+		if (i % 8 === 0) {
 			output += '</tr><tr><td>' + this.formatHexRowHeader(i, numDigits) + '</td>';
 		}
 		output += '<td> ' + this.memory.data[i] + '</td>';

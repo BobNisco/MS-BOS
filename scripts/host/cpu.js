@@ -44,33 +44,34 @@ Cpu.prototype.fetch = function() {
 };
 
 Cpu.prototype.execute = function(instruction) {
-	if (instruction == 'A9') {
+	instruction = String(instruction);
+	if (instruction === 'A9') {
 		this.loadAccumulatorConstant();
-	} else if (instruction == 'AD') {
+	} else if (instruction === 'AD') {
 		this.loadAccumulatorFromMemory();
-	} else if (instruction == '8D') {
+	} else if (instruction === '8D') {
 		this.storeAccumulatorInMemory();
-	} else if (instruction == '6D') {
+	} else if (instruction === '6D') {
 		this.addWithCarry();
-	} else if (instruction == 'A2') {
+	} else if (instruction === 'A2') {
 		this.loadXConstant();
-	} else if (instruction == 'AE') {
+	} else if (instruction === 'AE') {
 		this.loadXFromMemory();
-	} else if (instruction == 'A0') {
+	} else if (instruction === 'A0') {
 		this.loadYConstant();
-	} else if (instruction == 'AC') {
+	} else if (instruction === 'AC') {
 		this.loadYFromMemory();
-	} else if (instruction == 'EA') {
+	} else if (instruction === 'EA') {
 		this.noOperation();
-	} else if (instruction == '00') {
+	} else if (instruction === '00') {
 		this.break();
-	} else if (instruction == 'EC') {
+	} else if (instruction === 'EC') {
 		this.compareToX();
-	} else if (instruction == 'D0') {
+	} else if (instruction === 'D0') {
 		this.branchNotEqual();
-	} else if (instruction == 'EE') {
+	} else if (instruction === 'EE') {
 		this.increment();
-	} else if (instruction == 'FF') {
+	} else if (instruction === 'FF') {
 		this.systemCall();
 	} else {
 		// TODO: Error handling
@@ -163,7 +164,7 @@ Cpu.prototype.break = function() {
 Cpu.prototype.compareToX = function() {
 	// Get the data
 	var data = this.getDataAtNextTwoBytes();
-	if (this.Xreg == data) {
+	if (parseInt(this.Xreg) === parseInt(data)) {
 		this.Zflag = 1;
 	} else {
 		this.Zflag = 0;

@@ -28,7 +28,7 @@ function krnKbdDriverEntry()
 function krnKbdDispatchKeyPress(params)
 {
     // Parse the params.
-    var keyCode = params[0];
+    var keyCode = parseInt(params[0]);
     var isShifted = params[1];
     krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
     // Check for any falsy value on keyCode
@@ -59,25 +59,25 @@ function krnKbdDispatchKeyPress(params)
         _KernelInputQueue.enqueue(chr);
     } else if ((keyCode >= 48) && (keyCode <= 57)) {    // Number keys 0-9
         _KernelInputQueue.enqueue(handleNumberChar(keyCode, isShifted));
-    } else if ((keyCode == 32) || (keyCode == 13)) {    // Space or enter
+    } else if ((keyCode === 32) || (keyCode === 13)) {    // Space or enter
         chr = String.fromCharCode(keyCode);
         _KernelInputQueue.enqueue(chr);
     } else if (isPunctuationChar(keyCode)) {        // Punctuation keys
         _KernelInputQueue.enqueue(handlePunctuationChar(keyCode, isShifted));
-    } else if (keyCode == 8) {                      // Backspace
+    } else if (keyCode === 8) {                      // Backspace
         var deletedChar = _Console.buffer.charAt(_Console.buffer.length - 1);
         // Test to see if the buffer is blank
         if (deletedChar === "") {
             return;
         }
         _Console.clearLetter(deletedChar);
-    } else if (keyCode == 38 || keyCode == 40) {    // Up or down arrow
+    } else if (keyCode === 38 || keyCode === 40) {    // Up or down arrow
         _Console.clearLine();
         _Console.buffer = "";
         // If we are using the up arrow, we will be moving backwards
         // in the console history array, else we are using the down arrow
         // and we will need to advance forward
-        var offset = (keyCode == 38) ? -1 : 1;
+        var offset = (keyCode === 38) ? -1 : 1;
         _Console.currentHistoryIndex += offset;
 
         if (_Console.history[_Console.currentHistoryIndex]) {
