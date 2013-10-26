@@ -12,26 +12,46 @@
 function MemoryManager() {
 	// Make some new hardware!
 	this.memory = new Memory(MEMORY_SIZE);
+	// Create program locations in memory
+	this.locations = new Array(NUMBER_OF_PROGRAMS);
+	for (var i = 0; i < this.locations.length; i++) {
+		this.locations[i] = {
+			active: false,
+		};
+	}
 	// Print out the memory array to the screen
 	this.printToScreen();
 }
 
 MemoryManager.prototype.loadProgram = function(program) {
-	// Create a new PCB
-	var thisPcb = new Pcb();
-	// Set the base and limit of the program in the PCB
-	// TODO: make this work with offsets
-	thisPcb.base = 0;
-	thisPcb.limit = 255;
+	// Determine which program location this going to go into
+	var programLocation = this.getOpenProgramLocation();
+	if (programLocation === null) {
+		// TODO: Handle this
+	} else {
+		// Set this location as active
+		this.locations[programLocation].active = true;
+		// Create a new PCB
+		var thisPcb = new Pcb();
+		// Set the base and limit of the program in the PCB
+		// To determine base, we will add 1 to the programLocation to handle the
+		// 0-indexed nature of arrays, multiply it by the program size, then subtract
+		// the program size.
+		thisPcb.base = ((programLocation + 1) * PROGRAM_SIZE) - PROGRAM_SIZE;
+		// To determine limit, we will add 1 to the programLocation to handle the
+		// 0-indexed nature of arrays, multiply it by the program size, then subtract
+		// 1 to handle the 0-indexed nature of arrays.
+		thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
 
-	// Put the PCB on the ResidentQueue
-	_ResidentQueue[thisPcb.pid] = thisPcb;
-	// Actually load the program into memory
-	// at location 0 (for now)
-	this.loadProgramIntoMemory(program, 0);
-	thisPcb.printToScreen();
-	// Return the pid
-	return thisPcb.pid;
+		// Put the PCB on the ResidentQueue
+		_ResidentQueue[thisPcb.pid] = thisPcb;
+		// Actually load the program into memory
+		// at location 0 (for now)
+		this.loadProgramIntoMemory(program, programLocation);
+		thisPcb.printToScreen();
+		// Return the pid
+		return thisPcb.pid;
+	}
 }
 
 // Loads the program into memory at a given location.
@@ -44,6 +64,18 @@ MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	for (var i = 0; i < splitProgram.length; i++) {
 		this.memory.data[i + offsetLocation] = splitProgram[i];
 	}
+}
+
+// Finds the next open program location
+// Returns an integer of the next open program location if there are
+// available locations, else it returns null;
+MemoryManager.prototype.getOpenProgramLocation = function() {
+	for (var i = 0; i < this.locations.length; i++) {
+		if (this.locations[i].active === false) {
+			return i;
+		}
+	}
+	return null;
 }
 
 // Returns the value stored at the given address.
