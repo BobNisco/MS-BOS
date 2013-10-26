@@ -25,7 +25,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 	thisPcb.limit = 255;
 
 	// Put the PCB on the KernelProgramList
-	_KernelProgramList[thisPcb.pid] = thisPcb;
+	_ResidentQueue[thisPcb.pid] = thisPcb;
 	// Actually load the program into memory
 	// at location 0 (for now)
 	this.loadProgramIntoMemory(program, 0);

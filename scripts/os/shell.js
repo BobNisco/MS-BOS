@@ -188,11 +188,11 @@ function shellInit() {
         if (args.length <= 0) {
             _StdIn.putText("Usage: run <PID>  Please specify a valid PID.");
             _StdIn.advanceLine();
-        } else if (!_KernelProgramList[args[0]]) {
+        } else if (!_ResidentQueue[args[0]]) {
             _StdIn.putText("Please specify a valid PID.");
             _StdIn.advanceLine();
         } else {
-            _CurrentProgram = _KernelProgramList[args[0]];
+            _CurrentProgram = _ResidentQueue[args[0]];
             _CPU.init();
             _CPU.isExecuting = true;
         }
