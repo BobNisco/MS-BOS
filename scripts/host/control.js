@@ -90,6 +90,7 @@ function hostBtnStartOS_click(btn)
 {
     // Disable the start button...
     btn.disabled = true;
+    $(btn).addClass('disabled');
 
     // .. enable the Halt and Reset buttons ...
     $("#btnHaltOS").removeClass('disabled');
