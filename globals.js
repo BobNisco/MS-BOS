@@ -29,10 +29,13 @@ var UNKNOWN_OPCODE_IRQ = 4;
 //
 var _CPU = null;
 
-// We will need 3 sections of 256 bytes of memory each
-// to hold our 3 user programs.
-// 256 * 3 = 768. Mathematical!
-var MEMORY_SIZE = 768;
+// We want to be able to store 3 programs in memory
+var NUMBER_OF_PROGRAMS = 3;
+// Our programs will be 256 bytes of memory each
+var PROGRAM_SIZE = 256;
+// Our total memory size will be the number of programs times the program size.
+// Scalability!
+var MEMORY_SIZE = NUMBER_OF_PROGRAMS * PROGRAM_SIZE;
 var _MemoryManager = null;
 
 var _OSclock = 0;       // Page 23.

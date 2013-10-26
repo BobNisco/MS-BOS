@@ -24,7 +24,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 	thisPcb.base = 0;
 	thisPcb.limit = 255;
 
-	// Put the PCB on the KernelProgramList
+	// Put the PCB on the ResidentQueue
 	_ResidentQueue[thisPcb.pid] = thisPcb;
 	// Actually load the program into memory
 	// at location 0 (for now)
@@ -37,7 +37,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 // Loads the program into memory at a given location.
 MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	var splitProgram = program.split(' '),
-		offsetLocation = location * 256;
+		offsetLocation = location * PROGRAM_SIZE;
 
 	this.clearProgramSection(location);
 
@@ -65,9 +65,9 @@ MemoryManager.prototype.translateAddress = function(hex) {
 
 // Clears the program section for the given location.
 MemoryManager.prototype.clearProgramSection = function(location) {
-	var offsetLocation = location * 256;
+	var offsetLocation = location * PROGRAM_SIZE;
 
-	for (var i = 0; i < 256; i++) {
+	for (var i = 0; i < PROGRAM_SIZE; i++) {
 		this.memory.data[i + offsetLocation] = "00";
 	}
 };

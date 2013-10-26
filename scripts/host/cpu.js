@@ -179,9 +179,9 @@ Cpu.prototype.branchNotEqual = function() {
 		// We will increment PC to the position at the next byte
 		this.PC += _MemoryManager.translateAddress(_MemoryManager.getMemoryAtAddress(++this.PC)) + 1;
 		// Check that we haven't gone past our memory limit
-		if (this.PC >= 256) {
+		if (this.PC >= PROGRAM_SIZE) {
 			// Fix it, if we have
-			this.PC -= 256;
+			this.PC -= PROGRAM_SIZE;
 		}
 	} else {
 		// This is a failsafe. If Zflag is not 0, we don't want
