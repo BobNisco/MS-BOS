@@ -27,7 +27,8 @@ MemoryManager.prototype.loadProgram = function(program) {
 	// Determine which program location this going to go into
 	var programLocation = this.getOpenProgramLocation();
 	if (programLocation === null) {
-		// TODO: Handle this
+		_StdIn.putText("No available program locations in memory");
+		return null;
 	} else {
 		// Set this location as active
 		this.locations[programLocation].active = true;
@@ -42,6 +43,9 @@ MemoryManager.prototype.loadProgram = function(program) {
 		// 0-indexed nature of arrays, multiply it by the program size, then subtract
 		// 1 to handle the 0-indexed nature of arrays.
 		thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
+
+		// Set the PCB PC to start at the base
+		thisPcb.pc = thisPcb.base;
 
 		// Put the PCB on the ResidentQueue
 		_ResidentQueue[thisPcb.pid] = thisPcb;
@@ -81,11 +85,15 @@ MemoryManager.prototype.getOpenProgramLocation = function() {
 // Returns the value stored at the given address.
 // Is used in the CPU Fetch stage
 MemoryManager.prototype.getMemoryAtAddress = function(address) {
+	// Need to account for different memory sections
+	address += _CurrentProgram.base;
 	return this.memory.data[address];
 };
 
 // Puts the data parameter in the given address
 MemoryManager.prototype.putDataAtAddress = function(data, address) {
+	// Need to account for different memory sections
+	address += _CurrentProgram.base;
 	this.memory.data[address] = ('00' + data).slice(-2);
 	this.printToScreen();
 };

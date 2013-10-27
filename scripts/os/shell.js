@@ -172,7 +172,9 @@ function shellInit() {
             _StdIn.putText("Loading program. Please be patient.");
             _StdIn.advanceLine();
             var thisPid = _MemoryManager.loadProgram(input);
-            _StdIn.putText("PID: " + thisPid);
+            if (thisPid !== null) {
+                _StdIn.putText("PID: " + thisPid);
+            }
             _MemoryManager.printToScreen();
         } else {
             _StdIn.putText("What kind of input is that!?");
@@ -241,6 +243,26 @@ function shellInit() {
         {
             _StdIn.putText("Usage: step <boolean>  Please supply a boolean value.");
         }
+    };
+    this.commandList[this.commandList.length] = sc;
+
+    // clearall
+    sc = new ShellCommand();
+    sc.command = "clearall";
+    sc.description = " - Clears all program locations in memory";
+    sc.function = function(args) {
+        _StdIn.putText("Clearing all program locations in memory...");
+        _StdIn.advanceLine();
+        // Iterate over each program location in memory
+        for (var i = 0; i < _MemoryManager.locations.length; i++) {
+            // Clear the block of memory
+            _MemoryManager.clearProgramSection(i);
+            // Set its active flag to false
+            _MemoryManager.locations[i].active = false;
+        }
+        // Update the UI
+        _MemoryManager.printToScreen();
+        _StdIn.putText("All program locations cleared!");
     };
     this.commandList[this.commandList.length] = sc;
 

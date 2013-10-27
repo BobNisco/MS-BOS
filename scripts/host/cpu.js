@@ -29,7 +29,7 @@ Cpu.prototype.init = function() {
 	this.Yreg  = 0;
 	this.Zflag = 0;
 	this.isExecuting = false;
-}
+};
 
 Cpu.prototype.cycle = function() {
 	krnTrace("CPU cycle");
