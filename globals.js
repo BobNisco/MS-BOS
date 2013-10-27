@@ -28,6 +28,10 @@ var UNKNOWN_OPCODE_IRQ = 4;
 // Global Variables
 //
 var _CPU = null;
+var _CpuScheduler = null;
+
+// The Round Robin Quantum value
+var QUANTUM = 6;
 
 // We want to be able to store 3 programs in memory
 var NUMBER_OF_PROGRAMS = 3;
@@ -58,6 +62,7 @@ var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
 var _ResidentQueue = null;
+var _ReadyQueue = null;
 
 // Standard input and output
 var _StdIn  = null;

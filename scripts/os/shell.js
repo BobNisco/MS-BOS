@@ -194,9 +194,8 @@ function shellInit() {
             _StdIn.putText("Please specify a valid PID.");
             _StdIn.advanceLine();
         } else {
-            _CurrentProgram = _ResidentQueue[args[0]];
-            _CPU.init();
-            _CPU.isExecuting = true;
+            _ReadyQueue.enqueue(_ResidentQueue[args[0]]);
+            _CpuScheduler.start();
         }
     };
     this.commandList[this.commandList.length] = sc;
