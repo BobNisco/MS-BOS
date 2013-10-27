@@ -90,6 +90,9 @@ function krnOnCPUClockPulse()
     }
     else if (_CPU.isExecuting) // If there are no interrupts then run one CPU cycle if there is anything being processed.
     {
+        if (_CycleCounter > QUANTUM) {
+          _CpuScheduler.contextSwitch();
+        }
         _CPU.cycle();
         _CurrentProgram.printToScreen();
     }

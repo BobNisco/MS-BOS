@@ -29,6 +29,7 @@ var UNKNOWN_OPCODE_IRQ = 4;
 //
 var _CPU = null;
 var _CpuScheduler = null;
+var _CycleCounter = 0;
 
 // The Round Robin Quantum value
 var QUANTUM = 6;
