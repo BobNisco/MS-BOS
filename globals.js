@@ -22,7 +22,7 @@ var KEYBOARD_IRQ = 1;
 var SYS_OPCODE_IRQ = 2;
 var STEP_CPU_IRQ = 3;
 var UNKNOWN_OPCODE_IRQ = 4;
-
+var CONTEXT_SWITCH_IRQ = 5;
 
 //
 // Global Variables

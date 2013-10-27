@@ -44,9 +44,6 @@ MemoryManager.prototype.loadProgram = function(program) {
 		// 1 to handle the 0-indexed nature of arrays.
 		thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
 
-		// Set the PCB PC to start at the base
-		thisPcb.pc = thisPcb.base;
-
 		// Put the PCB on the ResidentQueue
 		_ResidentQueue[thisPcb.pid] = thisPcb;
 		// Actually load the program into memory

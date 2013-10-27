@@ -265,6 +265,20 @@ function shellInit() {
     };
     this.commandList[this.commandList.length] = sc;
 
+    // runall
+    sc = new ShellCommand();
+    sc.command = "runall";
+    sc.description = " - Enqueues all of the available programs in the resident list onto the ready queue";
+    sc.function = function(args) {
+        // Iterate over each program in the resident list
+        // to enqueue it on the ready queue
+        for (var i = 0; i < _ResidentQueue.length; i++) {
+            _ReadyQueue.enqueue(_ResidentQueue[i]);
+        }
+        _CpuScheduler.start();
+    };
+    this.commandList[this.commandList.length] = sc;
+
 
     // processes - list the running processes and their IDs
     // kill <id> - kills the specified process id.

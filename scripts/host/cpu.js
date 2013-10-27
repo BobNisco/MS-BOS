@@ -22,13 +22,27 @@ function Cpu() {
 	this.isExecuting = false;
 }
 
-Cpu.prototype.init = function() {
-	this.PC    = 0;
-	this.Acc   = 0;
-	this.Xreg  = 0;
-	this.Yreg  = 0;
-	this.Zflag = 0;
-	this.isExecuting = false;
+Cpu.prototype.init = function(pcb, isExecuting) {
+	// Since JS doesn't have true function overloading, we must handle
+	// the possibility of the pcb function argument being passed or not
+	if (pcb) {
+		this.PC    = pcb.pc;
+		this.Acc   = pcb.acc;
+		this.Xreg  = pcb.xReg;
+		this.Yreg  = pcb.yReg;
+		this.Zflag = pcb.zFlag;
+	} else {
+		this.PC    = 0;
+		this.Acc   = 0;
+		this.Xreg  = 0;
+		this.Yreg  = 0;
+		this.Zflag = 0;
+	}
+	if (isExecuting) {
+		this.isExecuting = isExecuting;
+	} else {
+		this.isExecuting = false;
+	}
 };
 
 Cpu.prototype.cycle = function() {
@@ -156,8 +170,7 @@ Cpu.prototype.break = function() {
 	_CurrentProgram.xReg = this.Xreg;
 	_CurrentProgram.yReg = this.Yreg;
 	_CurrentProgram.zFlag = this.Zflag;
-	// Set the CPU to not executing
-	this.isExecuting = false;
+	_KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ));
 };
 
 // CPX

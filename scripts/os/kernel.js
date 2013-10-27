@@ -90,7 +90,7 @@ function krnOnCPUClockPulse()
     }
     else if (_CPU.isExecuting) // If there are no interrupts then run one CPU cycle if there is anything being processed.
     {
-        if (_CycleCounter > QUANTUM) {
+        if (_CycleCounter >= QUANTUM) {
           _CpuScheduler.contextSwitch();
         }
         _CPU.cycle();
@@ -151,6 +151,9 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
             _CPU.isExecuting = false;
             // Log the error
             krnTrace("Unknown opcode: " + _MemoryManager.getMemoryAtAddress(_CPU.PC - 1));
+            break;
+        case CONTEXT_SWITCH_IRQ:
+            _CpuScheduler.contextSwitch(true);
             break;
         default:
             krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
