@@ -18,8 +18,10 @@ CpuScheduler.prototype.start = function() {
 		// Set mode bit to user mode
 		_Mode = 1;
 		_CurrentProgram = _ReadyQueue.dequeue();
-		_CPU.init();
-		_CPU.isExecuting = true;
+		// This program is now in the running state
+		_CurrentProgram.state = ProcessState.RUNNING;
+		// Initialize the CPU and set isExecuting to true
+		_CPU.init(_CurrentProgram, true);
 	}
 }
 
@@ -35,6 +37,8 @@ CpuScheduler.prototype.contextSwitch = function() {
 		_CurrentProgram.pcb.xReg = _CPU.Xreg;
 		_CurrentProgram.pcb.yReg = _CPU.Yreg;
 		_CurrentProgram.pcb.zFlag = _CPU.Zflag;
+		// Process will be moved back into the queue, so set its state to waiting
+		_CurrentProgram.state = ProcessState.WAITING;
 		// If the currently executing program has a state of terminated,
 		// do not put it back on the queue
 		if (_CurrentProgram.state !== ProcessState.TERMINATED) {
@@ -43,6 +47,9 @@ CpuScheduler.prototype.contextSwitch = function() {
 		}
 		// Set the CurrentProgram to the next process
 		_CurrentProgram = nextProcess;
+		// This program is now in the running state
+		_CurrentProgram.state = ProcessState.RUNNING;
+		// Initialize the CPU and set isExecuting to true
 		_CPU.init(_CurrentProgram, true);
 	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
 		// If we do not need to switch processing to next program on ready queue,

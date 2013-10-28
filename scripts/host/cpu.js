@@ -22,15 +22,15 @@ function Cpu() {
 	this.isExecuting = false;
 }
 
-Cpu.prototype.init = function(pcb, isExecuting) {
+Cpu.prototype.init = function(processState, isExecuting) {
 	// Since JS doesn't have true function overloading, we must handle
 	// the possibility of the pcb function argument being passed or not
-	if (pcb) {
-		this.PC    = pcb.pc;
-		this.Acc   = pcb.acc;
-		this.Xreg  = pcb.xReg;
-		this.Yreg  = pcb.yReg;
-		this.Zflag = pcb.zFlag;
+	if (processState) {
+		this.PC    = processState.pcb.pc;
+		this.Acc   = processState.pcb.acc;
+		this.Xreg  = processState.pcb.xReg;
+		this.Yreg  = processState.pcb.yReg;
+		this.Zflag = processState.pcb.zFlag;
 	} else {
 		this.PC    = 0;
 		this.Acc   = 0;

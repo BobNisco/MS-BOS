@@ -13,14 +13,14 @@
 
 function ProcessState() {
 	// Hold a program's PCB
-	this.pcb = new Pcb();
+	this.pcb = null;
 	// Hold a program's current state
-	this.state = this.NEW;
+	this.state = 0;
 }
 
 // Define some constants for the possible states
-ProcessState.prototype.NEW = 0;
-ProcessState.prototype.READY = 1;
-ProcessState.prototype.RUNNING = 2;
-ProcessState.prototype.WAITING = 3;
-ProcessState.prototype.TERMINATED = 4;
+ProcessState.NEW = 0;
+ProcessState.READY = 1;
+ProcessState.RUNNING = 2;
+ProcessState.WAITING = 3;
+ProcessState.TERMINATED = 4;
