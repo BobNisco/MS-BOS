@@ -320,6 +320,42 @@ function shellInit() {
 	this.commandList[this.commandList.length] = sc;
 
 	// kill <id> - kills the specified process id.
+	sc = new ShellCommand();
+	sc.command = "kill";
+	sc.description = " <pid> - kills the specified process id";
+	sc.function = function(args) {
+		if (args.length > 0) {
+			var givenPid = parseInt(args[0]),
+				foundProcess = null;
+			// Check to see if the PID is the currently running program
+			if (_CurrentProgram && _CurrentProgram.pcb.pid === givenPid) {
+				foundProcess = _CurrentProgram;
+				// We have found it, send an interrupt to kill the current process
+				_KernelInterruptQueue.enqueue(new Interrupt(KILL_CURRENT_PROCESS_IRQ));
+			} else {
+				// Attempt to find the given PID in the ready queue
+				for (var i = 0; i < _ReadyQueue.getSize(); i++) {
+					if (_ReadyQueue.q[i].pcb.pid === givenPid) {
+						// We have found it in the ready queue
+						foundProcess = _ReadyQueue.q[i];
+						// Make a new interrupt and give it some params
+						var interrupt = new Interrupt();
+						interrupt.irq = KILL_PROCESS_IRQ;
+						interrupt.params = {pid : foundProcess.pcb.pid};
+						_KernelInterruptQueue.enqueue(interrupt);
+					}
+				}
+			}
+
+			// We could not find the process with the PID, it must not be valid
+			if (foundProcess === null) {
+				_StdIn.putText("Usage: kill <pid>  Please supply a valid PID.");
+			}
+		} else {
+			_StdIn.putText("Usage: kill <pid>  Please supply a PID.");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
 
 	//
 	// Display the initial prompt.

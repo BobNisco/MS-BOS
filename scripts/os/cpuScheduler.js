@@ -47,6 +47,19 @@ CpuScheduler.prototype.contextSwitch = function() {
 		}
 		// Update the display
 		_CurrentProgram.printToScreen();
+		// Check to see if the next process has been killed by the user
+		if (nextProcess.state === ProcessState.TERMINATED) {
+			// Update the display
+			nextProcess.printToScreen();
+			// If so, we're not going just move on to the next process
+			nextProcess = _ReadyQueue.dequeue();
+			// Check to see if there are any more processes left
+			if (nextProcess === null) {
+				// We have no more processes, stop the cpu/scheduler
+				this.stop();
+				return;
+			}
+		}
 		// Set the CurrentProgram to the next process
 		_CurrentProgram = nextProcess;
 		// This program is now in the running state
@@ -54,18 +67,24 @@ CpuScheduler.prototype.contextSwitch = function() {
 		// Initialize the CPU and set isExecuting to true
 		_CPU.init(_CurrentProgram, true);
 	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
-		// If we do not need to switch processing to next program on ready queue,
-		// we'll determine if the currently executing program has a state of terminated.
-		// If so, we will halt the CPU as we know that there is nothing else on the
-		// ready queue, and our running process is terminated.
-		_CPU.isExecuting = false;
-		// Set the mode bit back to kernel mode, as the user processes are over
-		_Mode = 0;
-		// Update the display
-		_CurrentProgram.printToScreen();
-		// Reset the current program
-		_CurrentProgram = null;
+		this.stop();
 	}
+	// Reset the cycle counter
+	_CycleCounter = 0;
+}
+
+CpuScheduler.prototype.stop = function() {
+	// If we do not need to switch processing to next program on ready queue,
+	// we'll determine if the currently executing program has a state of terminated.
+	// If so, we will halt the CPU as we know that there is nothing else on the
+	// ready queue, and our running process is terminated.
+	_CPU.isExecuting = false;
+	// Set the mode bit back to kernel mode, as the user processes are over
+	_Mode = 0;
+	// Update the display
+	_CurrentProgram.printToScreen();
+	// Reset the current program
+	_CurrentProgram = null;
 	// Reset the cycle counter
 	_CycleCounter = 0;
 }
