@@ -9,37 +9,37 @@
 
 function Queue()
 {
-    // Properties
-    this.q = new Array();
+	// Properties
+	this.q = new Array();
 
-    // Methods
-    this.getSize = function() {
-        return this.q.length;
-    };
+	// Methods
+	this.getSize = function() {
+		return this.q.length;
+	};
 
-    this.isEmpty = function(){
-        return (this.q.length == 0);
-    };
+	this.isEmpty = function(){
+		return (this.q.length == 0);
+	};
 
-    this.enqueue = function(element) {
-        this.q.push(element);
-    };
+	this.enqueue = function(element) {
+		this.q.push(element);
+	};
 
-    this.dequeue = function() {
-        var retVal = null;
-        if (this.q.length > 0)
-        {
-            retVal = this.q.shift();
-        }
-        return retVal;
-    };
+	this.dequeue = function() {
+		var retVal = null;
+		if (this.q.length > 0)
+		{
+			retVal = this.q.shift();
+		}
+		return retVal;
+	};
 
-    this.toString = function() {
-        var retVal = "";
-        for (var i in this.q)
-        {
-            retVal += "[" + this.q[i] + "] ";
-        }
-        return retVal;
-    };
+	this.toString = function() {
+		var retVal = "";
+		for (var i in this.q)
+		{
+			retVal += "[" + this.q[i] + "] ";
+		}
+		return retVal;
+	};
 }

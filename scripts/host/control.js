@@ -21,65 +21,65 @@
 //
 function hostInit()
 {
-    // Get a global reference to the canvas.  TODO: Move this stuff into a Display Device Driver, maybe?
-    _Canvas  = document.getElementById('display');
+	// Get a global reference to the canvas.  TODO: Move this stuff into a Display Device Driver, maybe?
+	_Canvas  = document.getElementById('display');
 
-    // Get a global reference to the drawing context.
-    _DrawingContext = _Canvas.getContext('2d');
+	// Get a global reference to the drawing context.
+	_DrawingContext = _Canvas.getContext('2d');
 
-    // Enable the added-in canvas text functions (see canvastext.js for provenance and details).
-    CanvasTextFunctions.enable(_DrawingContext);   // TODO: Text functionality is now built in to the HTML5 canvas. Consider using that instead.
+	// Enable the added-in canvas text functions (see canvastext.js for provenance and details).
+	CanvasTextFunctions.enable(_DrawingContext);   // TODO: Text functionality is now built in to the HTML5 canvas. Consider using that instead.
 
-    // Clear the log text box.
-    document.getElementById("taLog").value="";
+	// Clear the log text box.
+	document.getElementById("taLog").value="";
 
-    // Set focus on the start button.
-    document.getElementById("btnStartOS").focus();
+	// Set focus on the start button.
+	document.getElementById("btnStartOS").focus();
 
-    // Check for our testing and enrichment core.
-    if (typeof Glados === "function") {
-        _GLaDOS = new Glados();
-        _GLaDOS.init();
-    };
+	// Check for our testing and enrichment core.
+	if (typeof Glados === "function") {
+		_GLaDOS = new Glados();
+		_GLaDOS.init();
+	};
 
-    // Initialize the global _Taskbar variable
-    _Taskbar = document.getElementById('taskbar');
-    _Taskbar.datetime = document.getElementById('taskbar-datetime');
-    _Taskbar.updateDatetime = function() {
-        _Taskbar.datetime.innerText = getCurrentDateTime();
-    };
-    // Set the current date time right away
-    _Taskbar.updateDatetime();
-    // Upate the taskbar datetime every second
-    setInterval(function() {
-        _Taskbar.updateDatetime();
-    }, 1000);
-    _Taskbar.status = document.getElementById('taskbar-status');
-    _Taskbar.setStatus = function(newStatus) {
-        _Taskbar.status.innerText = newStatus;
-    };
+	// Initialize the global _Taskbar variable
+	_Taskbar = document.getElementById('taskbar');
+	_Taskbar.datetime = document.getElementById('taskbar-datetime');
+	_Taskbar.updateDatetime = function() {
+		_Taskbar.datetime.innerText = getCurrentDateTime();
+	};
+	// Set the current date time right away
+	_Taskbar.updateDatetime();
+	// Upate the taskbar datetime every second
+	setInterval(function() {
+		_Taskbar.updateDatetime();
+	}, 1000);
+	_Taskbar.status = document.getElementById('taskbar-status');
+	_Taskbar.setStatus = function(newStatus) {
+		_Taskbar.status.innerText = newStatus;
+	};
 }
 
 function hostLog(msg, source)
 {
-    // Check the source.
-    if (!source) {
-        source = "?";
-    }
+	// Check the source.
+	if (!source) {
+		source = "?";
+	}
 
-    // Note the OS CLOCK.
-    var clock = _OSclock;
+	// Note the OS CLOCK.
+	var clock = _OSclock;
 
-    // Note the REAL clock in milliseconds since January 1, 1970.
-    var now = new Date().getTime();
+	// Note the REAL clock in milliseconds since January 1, 1970.
+	var now = new Date().getTime();
 
-    // Build the log string.
-    var str = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
+	// Build the log string.
+	var str = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
 
-    // Update the log console.
-    var taLog = document.getElementById("taLog");
-    taLog.value = str + taLog.value;
-    // Optionally update a log database or some streaming service.
+	// Update the log console.
+	var taLog = document.getElementById("taLog");
+	taLog.value = str + taLog.value;
+	// Optionally update a log database or some streaming service.
 }
 
 
@@ -88,77 +88,77 @@ function hostLog(msg, source)
 //
 function hostBtnStartOS_click(btn)
 {
-    // Disable the start button...
-    btn.disabled = true;
-    $(btn).addClass('disabled');
+	// Disable the start button...
+	btn.disabled = true;
+	$(btn).addClass('disabled');
 
-    // .. enable the Halt and Reset buttons ...
-    $("#btnHaltOS").removeClass('disabled');
-    $("#btnReset").removeClass('disabled');
+	// .. enable the Halt and Reset buttons ...
+	$("#btnHaltOS").removeClass('disabled');
+	$("#btnReset").removeClass('disabled');
 
-    // .. set focus on the OS console display ...
-    document.getElementById("display").focus();
+	// .. set focus on the OS console display ...
+	document.getElementById("display").focus();
 
-    // ... Create and initialize the CPU ...
-    _CPU = new Cpu();
-    printCpuToScreen();
+	// ... Create and initialize the CPU ...
+	_CPU = new Cpu();
+	printCpuToScreen();
 
-    // ... Create and initialize the memory ...
-    _MemoryManager = new MemoryManager();
+	// ... Create and initialize the memory ...
+	_MemoryManager = new MemoryManager();
 
-    // ... then set the host clock pulse ...
-    _hardwareClockID = setInterval(hostClockPulse, CPU_CLOCK_INTERVAL);
-    // .. and call the OS Kernel Bootstrap routine.
-    krnBootstrap();
+	// ... then set the host clock pulse ...
+	_hardwareClockID = setInterval(hostClockPulse, CPU_CLOCK_INTERVAL);
+	// .. and call the OS Kernel Bootstrap routine.
+	krnBootstrap();
 }
 
 function hostBtnHaltOS_click(btn)
 {
-    if (!$('#btnHaltOS').hasClass('disabled')) {
-        hostLog("emergency halt", "host");
-        hostLog("Attempting Kernel shutdown.", "host");
-        // Call the OS shutdown routine.
-        krnShutdown();
-        // Stop the JavaScript interval that's simulating our clock pulse.
-        clearInterval(_hardwareClockID);
-        // TODO: Is there anything else we need to do here?
-    }
+	if (!$('#btnHaltOS').hasClass('disabled')) {
+		hostLog("emergency halt", "host");
+		hostLog("Attempting Kernel shutdown.", "host");
+		// Call the OS shutdown routine.
+		krnShutdown();
+		// Stop the JavaScript interval that's simulating our clock pulse.
+		clearInterval(_hardwareClockID);
+		// TODO: Is there anything else we need to do here?
+	}
 }
 
 function hostBtnReset_click(btn)
 {
-    if (!$('#btnReset').hasClass('disabled')) {
-        // The easiest and most thorough way to do this is to reload (not refresh) the document.
-        location.reload(true);
-        // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
-        // be reloaded from the server. If it is false or not specified, the browser may reload the
-        // page from its cache, which is not what we want.
-    }
+	if (!$('#btnReset').hasClass('disabled')) {
+		// The easiest and most thorough way to do this is to reload (not refresh) the document.
+		location.reload(true);
+		// That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
+		// be reloaded from the server. If it is false or not specified, the browser may reload the
+		// page from its cache, which is not what we want.
+	}
 }
 
 function hostBtnStep_click(btn) {
-    if (!$('#btnStep').hasClass('disabled')) {
-        // Make a software interrupt to step ahead 1 cycle
-        _KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ));
-    }
+	if (!$('#btnStep').hasClass('disabled')) {
+		// Make a software interrupt to step ahead 1 cycle
+		_KernelInterruptQueue.enqueue(new Interrupt(STEP_CPU_IRQ));
+	}
 }
 
 function printCpuToScreen() {
-    $('#pcDisplay').html(_CPU.PC);
-    $('#accDisplay').html(_CPU.Acc);
-    $('#xRegDisplay').html(_CPU.Xreg);
-    $('#yRegDisplay').html(_CPU.Yreg);
-    $('#zRegDisplay').html(_CPU.Zflag);
+	$('#pcDisplay').html(_CPU.PC);
+	$('#accDisplay').html(_CPU.Acc);
+	$('#xRegDisplay').html(_CPU.Xreg);
+	$('#yRegDisplay').html(_CPU.Yreg);
+	$('#zRegDisplay').html(_CPU.Zflag);
 };
 
 // jQuery's ondocument ready handler function
 $(document).ready(function() {
-    // Bind a function to the user-program buttons
-    $('.user-program').on('click', function(e) {
-        var el = $(this);
-        e.preventDefault();
-        // Set the userInput textarea to the program
-        // on the clicked button.
-        $('#taProgramInput').html(el.data('program'));
-    });
+	// Bind a function to the user-program buttons
+	$('.user-program').on('click', function(e) {
+		var el = $(this);
+		e.preventDefault();
+		// Set the userInput textarea to the program
+		// on the clicked button.
+		$('#taProgramInput').html(el.data('program'));
+	});
 });
