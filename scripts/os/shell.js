@@ -285,6 +285,19 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
+	// quantum
+	sc = new ShellCommand();
+	sc.command = "quantum";
+	sc.description = " <int> - Sets the time quantum for the Round Robin scheduler";
+	sc.function = function(args) {
+		if (args.length > 0) {
+			QUANTUM = parseInt(args[0]);
+		} else {
+			_StdIn.putText("Usage: quantum <int>  Please supply an integer value.");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
 
 	// processes - list the running processes and their IDs
 	// kill <id> - kills the specified process id.
