@@ -37,11 +37,11 @@ CpuScheduler.prototype.contextSwitch = function() {
 		_CurrentProgram.pcb.xReg = _CPU.Xreg;
 		_CurrentProgram.pcb.yReg = _CPU.Yreg;
 		_CurrentProgram.pcb.zFlag = _CPU.Zflag;
-		// Process will be moved back into the queue, so set its state to waiting
-		_CurrentProgram.state = ProcessState.WAITING;
 		// If the currently executing program has a state of terminated,
 		// do not put it back on the queue
 		if (_CurrentProgram.state !== ProcessState.TERMINATED) {
+			// Process will be moved back into the queue, so set its state to waiting
+			_CurrentProgram.state = ProcessState.WAITING;
 			// Put the ProcessState back on the ready queue
 			_ReadyQueue.enqueue(_CurrentProgram);
 		}
