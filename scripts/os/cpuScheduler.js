@@ -45,6 +45,8 @@ CpuScheduler.prototype.contextSwitch = function() {
 			// Put the ProcessState back on the ready queue
 			_ReadyQueue.enqueue(_CurrentProgram);
 		}
+		// Update the display
+		_CurrentProgram.printToScreen();
 		// Set the CurrentProgram to the next process
 		_CurrentProgram = nextProcess;
 		// This program is now in the running state
@@ -59,6 +61,8 @@ CpuScheduler.prototype.contextSwitch = function() {
 		_CPU.isExecuting = false;
 		// Set the mode bit back to kernel mode, as the user processes are over
 		_Mode = 0;
+		// Update the display
+		_CurrentProgram.printToScreen();
 		// Reset the current program
 		_CurrentProgram = null;
 	}

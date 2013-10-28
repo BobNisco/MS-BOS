@@ -94,7 +94,7 @@ function krnOnCPUClockPulse()
 		  _CpuScheduler.contextSwitch();
 		}
 		_CPU.cycle();
-		_CurrentProgram.pcb.printToScreen();
+		_CurrentProgram.printToScreen();
 	}
 	else                       // If there are no interrupts and there is nothing being executed then just be idle.
 	{

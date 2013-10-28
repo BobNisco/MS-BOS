@@ -49,9 +49,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 		newProcessState.pcb = thisPcb;
 		_ResidentQueue[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
-		// at location 0 (for now)
 		this.loadProgramIntoMemory(program, programLocation);
-		thisPcb.printToScreen();
 		// Return the pid
 		return thisPcb.pid;
 	}
