@@ -37,10 +37,16 @@ ProcessState.prototype.printToScreen = function() {
 		// We need to add it to the table
 		tbody.append(this.createDisplayRow());
 	}
+
+	if (this.state === ProcessState.TERMINATED) {
+		thisTr = tbody.children('[data-id="' + this.pcb.pid + '"]');
+		thisTr.hide('fast');
+	}
 };
 
 ProcessState.prototype.createDisplayRow = function() {
-	return '<tr data-id="' + this.pcb.pid + '"><td class="pcbPidDisplay">' + this.pcb.pid + '</td>' +
+	return '<tr data-id="' + this.pcb.pid + '" data-status="' + this.state +'">' +
+			'<td class="pcbPidDisplay">' + this.pcb.pid + '</td>' +
 			'<td class="processStateDisplay">' + this.stateIntToString(this.state) + '</td>' +
 			'<td class="pcbPcDisplay">' + this.pcb.pc + '</td>' +
 			'<td class="pcbAccDisplay">' + this.pcb.acc + '</td>' +

@@ -161,4 +161,18 @@ $(document).ready(function() {
 		// on the clicked button.
 		$('#taProgramInput').html(el.data('program'));
 	});
+
+	// On click of the toggle terminated processes button, we will
+	// toggle the visibility of the table rows who were previously terminated
+	$('#toggleTerminatedProcesses').on('click', function(e) {
+		var table = $('#readyQueueDisplay').find('table'),
+			tbody = table.find('tbody'),
+			rows = tbody.children();
+		$.each(rows, function(i, val) {
+			var el = $(val);
+			if (el.data('state') === ProcessState.terminated) {
+				el.toggle('fast');
+			}
+		});
+	});
 });
