@@ -165,12 +165,12 @@ Cpu.prototype.noOperation = function() {
 // Break (which is really a system call)
 Cpu.prototype.break = function() {
 	// Update the PCB for this program
-	_CurrentProgram.pc = this.PC;
-	_CurrentProgram.acc = this.Acc;
-	_CurrentProgram.xReg = this.Xreg;
-	_CurrentProgram.yReg = this.Yreg;
-	_CurrentProgram.zFlag = this.Zflag;
-	_KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ));
+	_CurrentProgram.pcb.pc = this.PC;
+	_CurrentProgram.pcb.acc = this.Acc;
+	_CurrentProgram.pcb.xReg = this.Xreg;
+	_CurrentProgram.pcb.yReg = this.Yreg;
+	_CurrentProgram.pcb.zFlag = this.Zflag;
+	_KernelInterruptQueue.enqueue(new Interrupt(CPU_BREAK_IRQ));
 };
 
 // CPX

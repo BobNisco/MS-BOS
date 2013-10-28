@@ -44,8 +44,10 @@ MemoryManager.prototype.loadProgram = function(program) {
 		// 1 to handle the 0-indexed nature of arrays.
 		thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
 
-		// Put the PCB on the ResidentQueue
-		_ResidentQueue[thisPcb.pid] = thisPcb;
+		// Make a new ProcessState instance and put it on the ResidentQueue
+		var newProcessState = new ProcessState();
+		newProcessState.pcb = thisPcb;
+		_ResidentQueue[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
 		// at location 0 (for now)
 		this.loadProgramIntoMemory(program, programLocation);
@@ -83,14 +85,14 @@ MemoryManager.prototype.getOpenProgramLocation = function() {
 // Is used in the CPU Fetch stage
 MemoryManager.prototype.getMemoryAtAddress = function(address) {
 	// Need to account for different memory sections
-	address += _CurrentProgram.base;
+	address += _CurrentProgram.pcb.base;
 	return this.memory.data[address];
 };
 
 // Puts the data parameter in the given address
 MemoryManager.prototype.putDataAtAddress = function(data, address) {
 	// Need to account for different memory sections
-	address += _CurrentProgram.base;
+	address += _CurrentProgram.pcb.base;
 	this.memory.data[address] = ('00' + data).slice(-2);
 	this.printToScreen();
 };

@@ -94,7 +94,7 @@ function krnOnCPUClockPulse()
 		  _CpuScheduler.contextSwitch();
 		}
 		_CPU.cycle();
-		_CurrentProgram.printToScreen();
+		_CurrentProgram.pcb.printToScreen();
 	}
 	else                       // If there are no interrupts and there is nothing being executed then just be idle.
 	{
@@ -153,7 +153,11 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			krnTrace("Unknown opcode: " + _MemoryManager.getMemoryAtAddress(_CPU.PC - 1));
 			break;
 		case CONTEXT_SWITCH_IRQ:
-			_CpuScheduler.contextSwitch(true);
+			_CpuScheduler.contextSwitch();
+			break;
+		case CPU_BREAK_IRQ:
+			_CurrentProgram.state = ProcessState.TERMINATED;
+			_CpuScheduler.contextSwitch();
 			break;
 		default:
 			krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
