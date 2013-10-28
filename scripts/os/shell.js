@@ -299,8 +299,26 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
-
 	// processes - list the running processes and their IDs
+	sc = new ShellCommand();
+	sc.command = "processes";
+	sc.description = " - Lists the running processes and their PIDs";
+	sc.function = function(args) {
+		var result = "";
+		for (var i = 0; i < _ReadyQueue.getSize(); i++) {
+			var theProcess = _ReadyQueue.q[i];
+			if (theProcess.state !== ProcessState.TERMINATED) {
+				result += ("PID: " + theProcess.pcb.pid + ", ");
+			}
+		}
+		if (result.length) {
+			_StdIn.putText(result);
+		} else {
+			_StdIn.putText("There are no currently running processes.");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
 	// kill <id> - kills the specified process id.
 
 	//
