@@ -147,10 +147,11 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			break;
 		case UNKNOWN_OPCODE_IRQ:
 			// Handling an unknown opcode
-			// Stop the CPU from executing
-			_CPU.isExecuting = false;
 			// Log the error
 			krnTrace("Unknown opcode: " + _MemoryManager.getMemoryAtAddress(_CPU.PC - 1));
+			// Terminate the offending program
+			_CurrentProgram.state = ProcessState.TERMINATED;
+			_CpuScheduler.contextSwitch();
 			break;
 		case CONTEXT_SWITCH_IRQ:
 			_CpuScheduler.contextSwitch();
