@@ -194,8 +194,11 @@ function shellInit() {
             _StdIn.putText("Please specify a valid PID.");
             _StdIn.advanceLine();
         } else {
-            _ReadyQueue.enqueue(_ResidentQueue[args[0]]);
-            _CpuScheduler.start();
+            var requestedProgram = _ResidentQueue[args[0]];
+            if (requestedProgram.state !== ProcessState.TERMINATED) {
+                _ReadyQueue.enqueue();
+                _CpuScheduler.start();
+            }
         }
     };
     this.commandList[this.commandList.length] = sc;
@@ -273,7 +276,10 @@ function shellInit() {
         // Iterate over each program in the resident list
         // to enqueue it on the ready queue
         for (var i = 0; i < _ResidentQueue.length; i++) {
-            _ReadyQueue.enqueue(_ResidentQueue[i]);
+            var requestedProgram = _ResidentQueue[i];
+            if (requestedProgram.state !== ProcessState.TERMINATED) {
+                _ReadyQueue.enqueue(_ResidentQueue[i]);
+            }
         }
         _CpuScheduler.start();
     };

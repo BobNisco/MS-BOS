@@ -59,6 +59,8 @@ CpuScheduler.prototype.contextSwitch = function() {
 		_CPU.isExecuting = false;
 		// Set the mode bit back to kernel mode, as the user processes are over
 		_Mode = 0;
+		// Reset the current program
+		_CurrentProgram = null;
 	}
 	// Reset the cycle counter
 	_CycleCounter = 0;
