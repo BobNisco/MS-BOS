@@ -196,7 +196,7 @@ function shellInit() {
 		} else {
 			var requestedProgram = _ResidentQueue[args[0]];
 			if (requestedProgram.state !== ProcessState.TERMINATED) {
-				_ReadyQueue.enqueue();
+				_ReadyQueue.enqueue(requestedProgram);
 				_CpuScheduler.start();
 			}
 		}
