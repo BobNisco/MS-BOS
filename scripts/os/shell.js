@@ -330,19 +330,29 @@ function shellInit() {
 			// Check to see if the PID is the currently running program
 			if (_CurrentProgram && _CurrentProgram.pcb.pid === givenPid) {
 				foundProcess = _CurrentProgram;
-				// We have found it, send an interrupt to kill the current process
-				_KernelInterruptQueue.enqueue(new Interrupt(KILL_CURRENT_PROCESS_IRQ));
+				// We have found it, set its state to terminated
+				_CurrentProgram.state = ProcessState.TERMINATED;
+				// Update the diplay
+				_CurrentProgram.printToScreen();
+				// Log this event
+				krnTrace("Killed active process with PID " + givenPid);
+				// Context switch
+				_CpuScheduler.contextSwitch();
 			} else {
 				// Attempt to find the given PID in the ready queue
 				for (var i = 0; i < _ReadyQueue.getSize(); i++) {
 					if (_ReadyQueue.q[i].pcb.pid === givenPid) {
 						// We have found it in the ready queue
 						foundProcess = _ReadyQueue.q[i];
-						// Make a new interrupt and give it some params
-						var interrupt = new Interrupt();
-						interrupt.irq = KILL_PROCESS_IRQ;
-						interrupt.params = {pid : foundProcess.pcb.pid};
-						_KernelInterruptQueue.enqueue(interrupt);
+						// Set the state to terminated
+						_ReadyQueue.q[i].state = ProcessState.TERMINATED;
+						// Update the display
+						_ReadyQueue.q[i].printToScreen();
+						// Remove it from the ReadyQueue completely
+						_ReadyQueue.q.splice(i, 1);
+						// Log this event
+						krnTrace("Killed queued process with PID " + givenPid);
+						break;
 					}
 				}
 			}

@@ -24,8 +24,6 @@ var STEP_CPU_IRQ = 3;
 var UNKNOWN_OPCODE_IRQ = 4;
 var CONTEXT_SWITCH_IRQ = 5;
 var CPU_BREAK_IRQ = 6;
-var KILL_CURRENT_PROCESS_IRQ = 7;
-var KILL_PROCESS_IRQ = 8;
 // The Round Robin Quantum value
 var QUANTUM = 6;
 // We want to be able to store 3 programs in memory

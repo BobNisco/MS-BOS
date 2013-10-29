@@ -160,19 +160,6 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			_CurrentProgram.state = ProcessState.TERMINATED;
 			_CpuScheduler.contextSwitch();
 			break;
-		case KILL_CURRENT_PROCESS_IRQ:
-			_CurrentProgram.state = ProcessState.TERMINATED;
-			_CpuScheduler.contextSwitch();
-			break;
-		case KILL_PROCESS_IRQ:
-			// Find the process in the Ready Queue
-			for (var i = 0; i < _ReadyQueue.getSize(); i++) {
-				if (_ReadyQueue.q[i].pcb.pid === params.pid) {
-					// Set its state to terminated
-					_ReadyQueue.q[i].state = ProcessState.TERMINATED;
-				}
-			}
-			break;
 		default:
 			krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
 	}
