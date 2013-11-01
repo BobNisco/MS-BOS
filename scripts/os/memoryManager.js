@@ -84,7 +84,6 @@ MemoryManager.prototype.getOpenProgramLocation = function() {
 MemoryManager.prototype.getMemoryAtAddress = function(address) {
 	// Need to account for different memory sections
 	address += _CurrentProgram.pcb.base;
-	console.log("Getting data at address " + address);
 	if (address > _CurrentProgram.pcb.limit) {
 		_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_ACCESS_VIOLATION_IRQ, {address : address}));
 	}
@@ -95,7 +94,6 @@ MemoryManager.prototype.getMemoryAtAddress = function(address) {
 MemoryManager.prototype.putDataAtAddress = function(data, address) {
 	// Need to account for different memory sections
 	address += _CurrentProgram.pcb.base;
-	console.log("Putting " + data + " at address " + address);
 	if (address > _CurrentProgram.pcb.limit) {
 		_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_ACCESS_VIOLATION_IRQ, {address : address}));
 	}
