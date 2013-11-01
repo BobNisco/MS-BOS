@@ -63,7 +63,7 @@ MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	this.clearProgramSection(location);
 
 	for (var i = 0; i < splitProgram.length; i++) {
-		this.memory.data[i + offsetLocation] = splitProgram[i];
+		this.memory.data[i + offsetLocation] = splitProgram[i].toUpperCase();
 	}
 }
 
@@ -84,6 +84,10 @@ MemoryManager.prototype.getOpenProgramLocation = function() {
 MemoryManager.prototype.getMemoryAtAddress = function(address) {
 	// Need to account for different memory sections
 	address += _CurrentProgram.pcb.base;
+	console.log("Getting data at address " + address);
+	if (address > _CurrentProgram.pcb.limit) {
+		_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_ACCESS_VIOLATION_IRQ, {address : address}));
+	}
 	return this.memory.data[address];
 };
 
@@ -91,7 +95,15 @@ MemoryManager.prototype.getMemoryAtAddress = function(address) {
 MemoryManager.prototype.putDataAtAddress = function(data, address) {
 	// Need to account for different memory sections
 	address += _CurrentProgram.pcb.base;
-	this.memory.data[address] = ('00' + data).slice(-2);
+	console.log("Putting " + data + " at address " + address);
+	if (address > _CurrentProgram.pcb.limit) {
+		_KernelInterruptQueue.enqueue(new Interrupt(MEMORY_ACCESS_VIOLATION_IRQ, {address : address}));
+	}
+	// Nicely format bytes
+	if (data.length < 2) {
+		data = ('00' + data).slice(-2);
+	}
+	this.memory.data[address] = data.toUpperCase();
 	this.printToScreen();
 };
 
