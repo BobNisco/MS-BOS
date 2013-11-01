@@ -47,19 +47,6 @@ CpuScheduler.prototype.contextSwitch = function() {
 		}
 		// Update the display
 		_CurrentProgram.printToScreen();
-		// Check to see if the next process has been killed by the user
-		if (nextProcess.state === ProcessState.TERMINATED) {
-			// Update the display
-			nextProcess.printToScreen();
-			// If so, we're not going just move on to the next process
-			nextProcess = _ReadyQueue.dequeue();
-			// Check to see if there are any more processes left
-			if (nextProcess === null) {
-				// We have no more processes, stop the cpu/scheduler
-				this.stop();
-				return;
-			}
-		}
 		// Set the CurrentProgram to the next process
 		_CurrentProgram = nextProcess;
 		// This program is now in the running state

@@ -30,8 +30,6 @@ MemoryManager.prototype.loadProgram = function(program) {
 		_StdIn.putText("No available program locations in memory");
 		return null;
 	} else {
-		// Set this location as active
-		this.locations[programLocation].active = true;
 		// Create a new PCB
 		var thisPcb = new Pcb();
 		// Set the base and limit of the program in the PCB
@@ -44,12 +42,14 @@ MemoryManager.prototype.loadProgram = function(program) {
 		// 1 to handle the 0-indexed nature of arrays.
 		thisPcb.limit = ((programLocation + 1) * PROGRAM_SIZE) - 1;
 
-		// Make a new ProcessState instance and put it on the ResidentQueue
+		// Make a new ProcessState instance and put it on the ResidentList
 		var newProcessState = new ProcessState();
 		newProcessState.pcb = thisPcb;
 		_ResidentList[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
 		this.loadProgramIntoMemory(program, programLocation);
+		// Set this location as active
+		this.locations[programLocation].active = true;
 		// Return the pid
 		return thisPcb.pid;
 	}
@@ -117,7 +117,32 @@ MemoryManager.prototype.clearProgramSection = function(location) {
 	for (var i = 0; i < PROGRAM_SIZE; i++) {
 		this.memory.data[i + offsetLocation] = "00";
 	}
+	// Set this location to inactive
+	this.locations[location].active = false;
 };
+
+MemoryManager.prototype.removeFromResidentList = function(pid) {
+	// We will return a boolean saying if we found the element
+	// to remove from the ResidentList
+	var removed = false;
+	// Find the element in the ResidentList with the given pid
+	for (var i = 0; i < _ResidentList.length; i++) {
+		if (_ResidentList[i] && _ResidentList[i].pcb.pid === pid) {
+			var location = this.determineProgramSection(_ResidentList[i].pcb.base);
+			this.locations[location].active = false;
+			// Remove it from the ResidentList
+			_ResidentList.splice(i, 1);
+			removed = true;
+		}
+	}
+	return removed;
+}
+
+// Given a base address, find which program section it belongs to.
+// Useful for dealing with residentList
+MemoryManager.prototype.determineProgramSection = function(base) {
+	return Math.floor(base / PROGRAM_SIZE);
+}
 
 // Function to print out all of the memory to the memory div
 MemoryManager.prototype.printToScreen = function() {

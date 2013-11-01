@@ -157,11 +157,19 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			_CpuScheduler.contextSwitch();
 			break;
 		case CPU_BREAK_IRQ:
-			krnKillProcess(_CurrentProgram);
+			// Stop the program
+			_CurrentProgram.state = ProcessState.TERMINATED;
+			// Remove it from the resident list
+			_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 			_CpuScheduler.contextSwitch();
 			break;
 		case MEMORY_ACCESS_VIOLATION_IRQ:
-			krnKillProcess(_CurrentProgram);
+			// Kill the program
+			_CurrentProgram.state = ProcessState.TERMINATED;
+			// Remove it from the resident list
+			_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
+			// Log it
+			krnTrace("PID " + process.pcb.pid + " killed");
 			// Log it
 			krnTrace("Memory access violation. Process PID: " + _CurrentProgram.pcb.pid +
 				". Attempt to access " + params.address + " which is out of bounds (base: " +
@@ -172,11 +180,6 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 		default:
 			krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
 	}
-}
-
-function krnKillProcess(process) {
-	process.state = ProcessState.TERMINATED;
-	krnTrace("PID " + process.pcb.pid + " killed");
 }
 
 function krnTimerISR()  // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver).

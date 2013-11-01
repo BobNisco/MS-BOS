@@ -257,10 +257,8 @@ function shellInit() {
 		_StdIn.advanceLine();
 		// Iterate over each program location in memory
 		for (var i = 0; i < _MemoryManager.locations.length; i++) {
-			// Clear the block of memory
+			// Clear the block of memory and set it to inactive
 			_MemoryManager.clearProgramSection(i);
-			// Set its active flag to false
-			_MemoryManager.locations[i].active = false;
 		}
 		// Update the UI
 		_MemoryManager.printToScreen();
@@ -277,7 +275,7 @@ function shellInit() {
 		// to enqueue it on the ready queue
 		for (var i = 0; i < _ResidentList.length; i++) {
 			var requestedProgram = _ResidentList[i];
-			if (requestedProgram.state !== ProcessState.TERMINATED) {
+			if (requestedProgram && requestedProgram.state !== ProcessState.TERMINATED) {
 				_ReadyQueue.enqueue(_ResidentList[i]);
 				_ResidentList[i].printToScreen();
 			}
@@ -336,6 +334,8 @@ function shellInit() {
 				_CurrentProgram.printToScreen();
 				// Log this event
 				krnTrace("Killed active process with PID " + givenPid);
+				// Remove it from the resident list
+				_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 				// Context switch
 				_CpuScheduler.contextSwitch();
 			} else {
@@ -350,6 +350,8 @@ function shellInit() {
 						_ReadyQueue.q[i].printToScreen();
 						// Remove it from the ReadyQueue completely
 						_ReadyQueue.q.splice(i, 1);
+						// Remove it from the resident list
+						_MemoryManager.removeFromResidentList(foundProcess.pcb.pid);
 						// Log this event
 						krnTrace("Killed queued process with PID " + givenPid);
 						break;
