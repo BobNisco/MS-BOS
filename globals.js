@@ -63,7 +63,7 @@ var _Trace = true;
 var _KernelInterruptQueue = null;
 var _KernelBuffers = null;
 var _KernelInputQueue = null;
-var _ResidentQueue = null;
+var _ResidentList = null;
 var _ReadyQueue = null;
 
 // Standard input and output

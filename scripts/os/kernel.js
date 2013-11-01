@@ -40,7 +40,7 @@ function krnBootstrap()      // Page 8.
 	// ... more?
 	//
 	_CpuScheduler = new CpuScheduler();
-	_ResidentQueue = new Array();
+	_ResidentList = new Array();
 	_ReadyQueue = new Queue();
 
 	// Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)

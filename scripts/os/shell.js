@@ -190,11 +190,11 @@ function shellInit() {
 		if (args.length <= 0) {
 			_StdIn.putText("Usage: run <PID>  Please specify a valid PID.");
 			_StdIn.advanceLine();
-		} else if (!_ResidentQueue[args[0]]) {
+		} else if (!_ResidentList[args[0]]) {
 			_StdIn.putText("Please specify a valid PID.");
 			_StdIn.advanceLine();
 		} else {
-			var requestedProgram = _ResidentQueue[args[0]];
+			var requestedProgram = _ResidentList[args[0]];
 			if (requestedProgram.state !== ProcessState.TERMINATED) {
 				_ReadyQueue.enqueue(requestedProgram);
 				_CpuScheduler.start();
@@ -275,11 +275,11 @@ function shellInit() {
 	sc.function = function(args) {
 		// Iterate over each program in the resident list
 		// to enqueue it on the ready queue
-		for (var i = 0; i < _ResidentQueue.length; i++) {
-			var requestedProgram = _ResidentQueue[i];
+		for (var i = 0; i < _ResidentList.length; i++) {
+			var requestedProgram = _ResidentList[i];
 			if (requestedProgram.state !== ProcessState.TERMINATED) {
-				_ReadyQueue.enqueue(_ResidentQueue[i]);
-				_ResidentQueue[i].printToScreen();
+				_ReadyQueue.enqueue(_ResidentList[i]);
+				_ResidentList[i].printToScreen();
 			}
 		}
 		_CpuScheduler.start();

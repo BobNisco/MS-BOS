@@ -47,7 +47,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 		// Make a new ProcessState instance and put it on the ResidentQueue
 		var newProcessState = new ProcessState();
 		newProcessState.pcb = thisPcb;
-		_ResidentQueue[thisPcb.pid] = newProcessState;
+		_ResidentList[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
 		this.loadProgramIntoMemory(program, programLocation);
 		// Return the pid
