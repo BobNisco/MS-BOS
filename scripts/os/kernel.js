@@ -90,16 +90,20 @@ function krnOnCPUClockPulse()
 	}
 	else if (_CPU.isExecuting) // If there are no interrupts then run one CPU cycle if there is anything being processed.
 	{
-		if (_CycleCounter >= QUANTUM) {
-		  _CpuScheduler.contextSwitch();
-		}
-		_CPU.cycle();
-		_CurrentProgram.printToScreen();
+		handleCpuClockPulse();
 	}
 	else                       // If there are no interrupts and there is nothing being executed then just be idle.
 	{
 	   krnTrace("Idle");
 	}
+}
+
+function handleCpuClockPulse() {
+	if (_CycleCounter >= QUANTUM) {
+		_CpuScheduler.contextSwitch();
+	}
+	_CPU.cycle();
+	_CurrentProgram.printToScreen();
 }
 
 
@@ -143,7 +147,7 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			break;
 		case STEP_CPU_IRQ:
 			// Do a single CPU cycle
-			_CPU.cycle();
+			handleCpuClockPulse();
 			break;
 		case UNKNOWN_OPCODE_IRQ:
 			// Handling an unknown opcode

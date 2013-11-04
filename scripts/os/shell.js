@@ -234,6 +234,7 @@ function shellInit() {
 			if (args[0] === 'true') {
 				btnStep.removeClass('disabled');
 				_StepEnabled = true;
+				_CPU.isExecuting = false;
 			} else if (args[0] === 'false') {
 				btnStep.addClass('disabled');
 				_StepEnabled = false;

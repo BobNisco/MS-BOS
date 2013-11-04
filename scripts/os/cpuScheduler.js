@@ -20,8 +20,10 @@ CpuScheduler.prototype.start = function() {
 		_CurrentProgram = _ReadyQueue.dequeue();
 		// This program is now in the running state
 		_CurrentProgram.state = ProcessState.RUNNING;
-		// Initialize the CPU and set isExecuting to true
-		_CPU.init(_CurrentProgram, true);
+		// Initialize the CPU and set isExecuting to true only if
+		// step is not currently enabled.
+		var shouldBeExecuting = !_StepEnabled;
+		_CPU.init(_CurrentProgram, shouldBeExecuting);
 	}
 }
 
@@ -51,8 +53,10 @@ CpuScheduler.prototype.contextSwitch = function() {
 		_CurrentProgram = nextProcess;
 		// This program is now in the running state
 		_CurrentProgram.state = ProcessState.RUNNING;
-		// Initialize the CPU and set isExecuting to true
-		_CPU.init(_CurrentProgram, true);
+		// Initialize the CPU and set isExecuting to true only if
+		// step is not currently enabled.
+		var shouldBeExecuting = !_StepEnabled;
+		_CPU.init(_CurrentProgram, shouldBeExecuting);
 	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
 		this.stop();
 	}
