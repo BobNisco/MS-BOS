@@ -173,7 +173,7 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			// Remove it from the resident list
 			_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 			// Log it
-			krnTrace("PID " + process.pcb.pid + " killed");
+			krnTrace("PID " + _CurrentProgram.pcb.pid + " killed");
 			// Log it
 			krnTrace("Memory access violation. Process PID: " + _CurrentProgram.pcb.pid +
 				". Attempt to access " + params.address + " which is out of bounds (base: " +
