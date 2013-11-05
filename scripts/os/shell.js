@@ -135,6 +135,10 @@ function shellInit() {
 		} else {
 			krnTrapError('Look what you\'ve done this time!');
 		}
+		// Call the OS shutdown routine.
+		krnShutdown();
+		// Stop the JavaScript interval that's simulating our clock pulse.
+		clearInterval(_hardwareClockID);
 	};
 	this.commandList[this.commandList.length] = sc;
 
