@@ -157,9 +157,8 @@ $(document).ready(function() {
 	$('.user-program').on('click', function(e) {
 		var el = $(this);
 		e.preventDefault();
-		// Set the userInput textarea to the program
-		// on the clicked button.
-		$('#taProgramInput').html(el.data('program'));
+		// Set the userInput textarea to the program of the clicked button.
+		document.getElementById('taProgramInput').value = el.data('program');
 	});
 
 	var toggleTerminatedProcessesButton = $('#toggleTerminatedProcesses');
