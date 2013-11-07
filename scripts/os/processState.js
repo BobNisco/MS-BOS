@@ -38,14 +38,14 @@ ProcessState.prototype.printToScreen = function() {
 		tbody.append(this.createDisplayRow());
 	}
 
-	if (this.state === ProcessState.TERMINATED) {
+	if (this.state === ProcessState.TERMINATED && !_ShowTerminatedProcesses) {
 		thisTr = tbody.children('[data-id="' + this.pcb.pid + '"]');
 		thisTr.hide('fast');
 	}
 };
 
 ProcessState.prototype.createDisplayRow = function() {
-	return '<tr data-id="' + this.pcb.pid + '" data-status="' + this.state +'">' +
+	return '<tr data-id="' + this.pcb.pid + '" data-state="' + this.state +'">' +
 			'<td class="pcbPidDisplay">' + this.pcb.pid + '</td>' +
 			'<td class="processStateDisplay">' + this.stateIntToString(this.state) + '</td>' +
 			'<td class="pcbPcDisplay">' + this.pcb.pc + '</td>' +

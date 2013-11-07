@@ -76,6 +76,7 @@ var _CurrentProgram = null;
 // UI
 var _Console = null;
 var _OsShell = null;
+var _ShowTerminatedProcesses = false;
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode = false;

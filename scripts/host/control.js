@@ -162,16 +162,30 @@ $(document).ready(function() {
 		$('#taProgramInput').html(el.data('program'));
 	});
 
+	var toggleTerminatedProcessesButton = $('#toggleTerminatedProcesses');
 	// On click of the toggle terminated processes button, we will
 	// toggle the visibility of the table rows who were previously terminated
-	$('#toggleTerminatedProcesses').on('click', function(e) {
+	toggleTerminatedProcessesButton.on('click', function(e) {
 		var table = $('#readyQueueDisplay').find('table'),
 			tbody = table.find('tbody'),
 			rows = tbody.children();
+		// Flip the boolean
+		_ShowTerminatedProcesses = !_ShowTerminatedProcesses;
+		// Update the button text
+		if (_ShowTerminatedProcesses) {
+			toggleTerminatedProcessesButton.html('Hide Terminated Processes');
+		} else {
+			toggleTerminatedProcessesButton.html('Show Terminated Processes');
+		}
+		// For each of the rows, figure out whether we should hide or show them
 		$.each(rows, function(i, val) {
 			var el = $(val);
-			if (el.data('state') === ProcessState.terminated) {
-				el.toggle('fast');
+			if (el.data('state') === ProcessState.TERMINATED) {
+				if (_ShowTerminatedProcesses) {
+					el.show('fast');
+				} else {
+					el.hide('fast');
+				}
 			}
 		});
 	});
