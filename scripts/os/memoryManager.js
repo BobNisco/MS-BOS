@@ -104,7 +104,7 @@ MemoryManager.prototype.putDataAtAddress = function(data, address) {
 		data = ('00' + data).slice(-2);
 	}
 	this.memory.data[address] = data.toUpperCase();
-	this.printToScreen();
+	this.updateByteOutput(address);
 };
 
 // Translates memory at given hex location into base 10
@@ -157,11 +157,20 @@ MemoryManager.prototype.printToScreen = function() {
 		if (i % 8 === 0) {
 			output += '</tr><tr><td>' + this.formatHexRowHeader(i, numDigits) + '</td>';
 		}
-		output += '<td> ' + this.memory.data[i] + '</td>';
+		output += '<td data-id="' + i + '"> ' + this.memory.data[i] + '</td>';
 	}
 	output += "</tbody>";
 	memoryDiv.find('tbody').replaceWith(output);
 };
+
+// Updates a single byte in the output of the memory.
+// This reduces the massive overhead of calling printToScreen when
+// you are only updating a single byte in certain CPU functions.
+MemoryManager.prototype.updateByteOutput = function(location) {
+	var memoryDiv = $('#divMemory'),
+		theLocation = memoryDiv.find('[data-id="' + location + '"]');
+	theLocation.html(this.memory.data[location]);
+}
 
 // WARNING: Possible over-engineering ahead:
 // Formats the leading hex digits for each row in the Memory div.
