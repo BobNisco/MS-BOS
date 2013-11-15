@@ -374,6 +374,15 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
+	// getschedule
+		sc = new ShellCommand();
+	sc.command = "getschedule";
+	sc.description = " - returns the currently selected CPU scheduling algorithm";
+	sc.function = function(args) {
+		_StdIn.putText(_CpuScheduler.scheduler);
+	};
+	this.commandList[this.commandList.length] = sc;
+
 	//
 	// Display the initial prompt.
 	this.putPrompt();
