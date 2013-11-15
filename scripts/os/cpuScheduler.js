@@ -96,7 +96,8 @@ CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 };
 
 CpuScheduler.prototype.handleFCFSContextSwitch = function(nextProcess) {
-
+	// FCFS is basically Round Robin anyway! Yay for code-reuse!
+	this.handleRoundRobinContextSwitch(nextProcess);
 };
 
 CpuScheduler.prototype.stop = function() {

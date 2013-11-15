@@ -411,7 +411,8 @@ function shellInit() {
 				_StdIn.putText("Usage: Please supply a valid scheduler");
 			} else {
 				_CpuScheduler.scheduler = _CpuScheduler.schedulingOptions[schedulerIndex];
-				_StdIn.putText("Set CPU scheduling algorithm to " + _CpuScheduler.schedulingOptions[schedulerIndex]);
+				_StdIn.putText("Set CPU scheduling algorithm to " +
+					_CpuScheduler.schedulingOptions[schedulerIndex]);
 			}
 		} else {
 			_StdIn.putText("Usage: Please supply a scheduler");
