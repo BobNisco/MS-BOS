@@ -375,11 +375,47 @@ function shellInit() {
 	this.commandList[this.commandList.length] = sc;
 
 	// getschedule
-		sc = new ShellCommand();
+	sc = new ShellCommand();
 	sc.command = "getschedule";
 	sc.description = " - returns the currently selected CPU scheduling algorithm";
 	sc.function = function(args) {
 		_StdIn.putText(_CpuScheduler.scheduler);
+	};
+	this.commandList[this.commandList.length] = sc;
+
+	// setschedule
+	sc = new ShellCommand();
+	sc.command = "setschedule";
+	sc.description = "<[";
+	// Dynamically build the list of supported schedulers since we can always
+	// add or remove schedulers in the future!
+	for (var i = 0; i < _CpuScheduler.schedulingOptions.length; i++) {
+		sc.description += _CpuScheduler.schedulingOptions[i];
+		// For formatting purposes, only add a comma if we're not at
+		// the last value in the array
+		if (i != _CpuScheduler.schedulingOptions.length - 1) {
+			sc.description += ", ";
+		}
+	}
+	sc.description += "]> - sets the CPU scheduling algorithm";
+	sc.function = function(args) {
+		if (args.length > 0) {
+			// Ensure that the given argument is in the possible scheduling possibilities
+			var schedulerIndex = -1;
+			for (var i = 0; i < _CpuScheduler.schedulingOptions.length; i++) {
+				if (args[0] === _CpuScheduler.schedulingOptions[i]) {
+					schedulerIndex = i;
+				}
+			}
+			if (schedulerIndex === -1){
+				_StdIn.putText("Usage: Please supply a valid scheduler");
+			} else {
+				_CpuScheduler.scheduler = _CpuScheduler.schedulingOptions[schedulerIndex];
+				_StdIn.putText("Set CPU scheduling algorithm to " + _CpuScheduler.schedulingOptions[schedulerIndex]);
+			}
+		} else {
+			_StdIn.putText("Usage: Please supply a scheduler");
+		}
 	};
 	this.commandList[this.commandList.length] = sc;
 
