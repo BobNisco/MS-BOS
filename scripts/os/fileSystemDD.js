@@ -68,9 +68,11 @@ FileSystemDD.prototype.printToScreen = function() {
 	for (var track = 0; track < FS_TRACKS; track++) {
 		for (var sector = 0; sector < FS_SECTORS; sector++) {
 			for (var block = 0; block < FS_BLOCKS; block++) {
-				var thisKey = this.makeKey(track, sector, block);
+				var thisKey = this.makeKey(track, sector, block),
+					thisData = localStorage.getItem(thisKey);
 				output += '<tr><td>' + thisKey + '</td>' +
-					'<td>' + localStorage.getItem(thisKey) + '</td></tr>';
+					'<td>' + thisData.substring(0, 4) + '</td>'+
+					'<td>' + thisData.substring(5) + '</td></tr>';
 			}
 		}
 	}
