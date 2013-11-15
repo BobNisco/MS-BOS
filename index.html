@@ -127,29 +127,54 @@
 				</div>
 				<div class="col-md-6">
 					<div id="divStatuses">
-						<div id="divLog">
-							<label>Log</label>
-							<br>
-							<textarea name="taLog" id="taLog" rows="26" cols="48"></textarea>
+						<div class="row">
+							<div class="col-md-12">
+								<div id="divLog">
+									<label>Log</label>
+									<br>
+									<textarea name="taLog" id="taLog" rows="26" cols="48"></textarea>
+								</div>
+							</div>
 						</div>
 
-						<div id="divUserProgramInput">
-							<label>User Program Input</label>
-							<br>
-							<textarea name="taProgramInput" id="taProgramInput" rows="8" cols="48"></textarea>
-							<br>
-							<div class="btn btn-info user-program" data-program="A9 03 8D 41 00 A9 01 8D 40 00 AC 40 00 A2 01 FF EE 40 00 AE 40 00 EC 41 00 D0 EF A9 44 8D 42 00 A9 4F 8D 43 00 A9 4E 8D 44 00 A9 45 8D 45 00 A9 00 8D 46 00 A2 02 A0 42 FF 00">Program 1</div>
-							<div class="btn btn-info user-program" data-program="A9 00 8D 00 00 A9 00 8D 3B 00 A9 01 8D 3B 00 A9 00 8D 3C 00 A9 02 8D 3C 00 A9 01 6D 3B 00 8D 3B 00 A9 03 6D 3C 00 8D 3C 00 AC 3B 00 A2 01 FF A0 3D A2 02 FF AC 3C 00 A2 01 FF 00 00 00 20 61 6E 64 20 00">Program 2</div>
-							<div class="btn btn-info user-program" data-program="A9 00 8D 00 00 A9 00 8D 4B 00 A9 00 8D 4B 00 A2 03 EC 4B 00 D0 07 A2 01 EC 00 00 D0 05 A2 00 EC 00 00 D0 26 A0 4C A2 02 FF AC 4B 00 A2 01 FF A9 01 6D 4B 00 8D 4B 00 A2 02 EC 4B 00 D0 05 A0 55 A2 02 FF A2 01 EC 00 00 D0 C5 00 00 63 6F 75 6E 74 69 6E 67 00 68 65 6C 6C 6F 20 77 6F 72 6C 64 00">Program 3</div>
-							<div class="btn btn-info user-program" data-program="A9 A9 A2 A9 EC 10 00 8D 10 00 EE 08 00 D0 F8 00 00">Program 4</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div id="divUserProgramInput">
+									<label>User Program Input</label>
+									<br>
+									<textarea name="taProgramInput" id="taProgramInput" rows="8" cols="48"></textarea>
+									<br>
+									<div class="btn btn-info user-program" data-program="A9 03 8D 41 00 A9 01 8D 40 00 AC 40 00 A2 01 FF EE 40 00 AE 40 00 EC 41 00 D0 EF A9 44 8D 42 00 A9 4F 8D 43 00 A9 4E 8D 44 00 A9 45 8D 45 00 A9 00 8D 46 00 A2 02 A0 42 FF 00">Program 1</div>
+									<div class="btn btn-info user-program" data-program="A9 00 8D 00 00 A9 00 8D 3B 00 A9 01 8D 3B 00 A9 00 8D 3C 00 A9 02 8D 3C 00 A9 01 6D 3B 00 8D 3B 00 A9 03 6D 3C 00 8D 3C 00 AC 3B 00 A2 01 FF A0 3D A2 02 FF AC 3C 00 A2 01 FF 00 00 00 20 61 6E 64 20 00">Program 2</div>
+									<div class="btn btn-info user-program" data-program="A9 00 8D 00 00 A9 00 8D 4B 00 A9 00 8D 4B 00 A2 03 EC 4B 00 D0 07 A2 01 EC 00 00 D0 05 A2 00 EC 00 00 D0 26 A0 4C A2 02 FF AC 4B 00 A2 01 FF A9 01 6D 4B 00 8D 4B 00 A2 02 EC 4B 00 D0 05 A0 55 A2 02 FF A2 01 EC 00 00 D0 C5 00 00 63 6F 75 6E 74 69 6E 67 00 68 65 6C 6C 6F 20 77 6F 72 6C 64 00">Program 3</div>
+									<div class="btn btn-info user-program" data-program="A9 A9 A2 A9 EC 10 00 8D 10 00 EE 08 00 D0 F8 00 00">Program 4</div>
+								</div>
+							</div>
 						</div>
 
-						<div id="divMemoryWrapper">
-							<label>Memory</label>
-							<table id="divMemory" class="table table-bordered">
-								<tbody>
-								</tbody>
-							</table>
+						<div class="row">
+							<div class="col-md-9">
+								<div id="allMemoryWrapper">
+									<ul class="nav nav-tabs">
+										<li class="active"><a href="#divMemoryWrapper" data-toggle="tab">Memory</a></li>
+										<li><a href="#divFileSystemWrapper" data-toggle="tab">File System</a></li>
+									</ul>
+									<div id="myTabContent" class="tab-content">
+										<div class="tab-pane fade in active" id="divMemoryWrapper">
+											<table id="divMemory" class="table table-bordered memory-display-div">
+												<tbody>
+												</tbody>
+											</table>
+										</div>
+										<div class="tab-pane fade" id="divFileSystemWrapper">
+											<table id="divFileSystem" class="table table-bordered memory-display-div">
+												<tbody>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
