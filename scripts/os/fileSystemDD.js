@@ -26,3 +26,36 @@ function krnFileSystemDriverEntry() {
 function krnFileSystemISR(params) {
 
 }
+
+FileSystemDD.prototype.format = function() {
+	if (this.supportsHtml5Storage() === false) {
+		return false;
+	}
+	var zeroedOutData = "";
+	for (var i = 0; i < FS_NUM_BYTES; i++) {
+		zeroedOutData += "0";
+	}
+	for (var track = 0; track < FS_TRACKS; track++) {
+		for (var sector = 0; sector < FS_SECTORS; sector++) {
+			for (var block = 0; block < FS_BLOCKS; block++) {
+				localStorage.setItem(this.makeKey(track, sector, block), zeroedOutData);
+			}
+		}
+	}
+	return true;
+}
+
+FileSystemDD.prototype.makeKey = function(t, s, b) {
+	return String(t) + String(s) + String(b);
+}
+
+// Method to determine if the browser that the user is using supports
+// the HTML5 localStorage
+// Taken from http://diveintohtml5.info/storage.html
+FileSystemDD.prototype.supportsHtml5Storage = function() {
+	try {
+		return 'localStorage' in window && window['localStorage'] !== null;
+	} catch (e) {
+		return false;
+	}
+}

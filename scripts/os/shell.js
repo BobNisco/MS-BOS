@@ -420,6 +420,20 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
+	// format
+	sc = new ShellCommand();
+	sc.command = "format";
+	sc.description = " - intializes all blocks in all sectors in all tracks";
+	sc.function = function(args) {
+		var successfulFormat = _FileSystem.format();
+		if (successfulFormat) {
+			_StdIn.putText("Successfully formatted the filesystem.");
+		} else {
+			_StdIn.putText("Error while formatting filesystem.");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
 	//
 	// Display the initial prompt.
 	this.putPrompt();
