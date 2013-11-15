@@ -99,7 +99,10 @@ function krnOnCPUClockPulse()
 }
 
 function handleCpuClockPulse() {
-	if (_CycleCounter >= QUANTUM) {
+	// Since we need to handle multiple CPU schedulers, we will move the
+	// code to decide if we will context switch into the cpuScheduler itself.
+	var needToContextSwitch = _CpuScheduler.determineNeedToContextSwitch();
+	if (needToContextSwitch) {
 		_CpuScheduler.contextSwitch();
 	}
 	_CPU.cycle();
