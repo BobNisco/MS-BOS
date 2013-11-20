@@ -21,6 +21,7 @@ function FileSystemDD() {
 function krnFileSystemDriverEntry() {
 	// Initialization routine
 	this.status = "loaded";
+	this.printToScreen();
 }
 
 function krnFileSystemISR(params) {
@@ -65,17 +66,27 @@ FileSystemDD.prototype.printToScreen = function() {
 	var diskDiv = $('#divFileSystemWrapper'),
 		output = '<tbody>';
 
-	for (var track = 0; track < FS_TRACKS; track++) {
-		for (var sector = 0; sector < FS_SECTORS; sector++) {
-			for (var block = 0; block < FS_BLOCKS; block++) {
-				var thisKey = this.makeKey(track, sector, block),
-					thisData = localStorage.getItem(thisKey);
-				output += '<tr><td>' + thisKey + '</td>' +
-					'<td>' + thisData.substring(0, 4) + '</td>'+
-					'<td>' + thisData.substring(5) + '</td></tr>';
+	try {
+		for (var track = 0; track < FS_TRACKS; track++) {
+			for (var sector = 0; sector < FS_SECTORS; sector++) {
+				for (var block = 0; block < FS_BLOCKS; block++) {
+					var thisKey = this.makeKey(track, sector, block),
+						thisData = localStorage.getItem(thisKey);
+					output += '<tr><td>' + thisKey + '</td>' +
+						'<td>' + thisData.substring(0, 4) + '</td>'+
+						'<td>' + thisData.substring(5) + '</td></tr>';
+				}
 			}
 		}
+		output += '</tbody>';
+		diskDiv.find('tbody').replaceWith(output);
+		// Ensures that the fileSystem table is shown and the error is hidden
+		diskDiv.find('#divFileSystem').show();
+		diskDiv.find('#fileSystemError').hide();
+	} catch (e) {
+		// We hit an error. Most likely the file system (localStorage)
+		// was not formatted. Let's tell the user that they should format.
+		diskDiv.find('#divFileSystem').hide();
+		diskDiv.append('<p id="fileSystemError">File system needs to be formatted.</p>');
 	}
-	output += '</tbody>';
-	diskDiv.find('tbody').replaceWith(output);
 }
