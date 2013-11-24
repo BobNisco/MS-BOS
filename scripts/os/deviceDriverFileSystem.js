@@ -35,14 +35,22 @@ function krnFileSystemISR(params) {
 
 }
 
-DeviceDriverFileSystem.prototype.format = function() {
-	if (this.supportsHtml5Storage() === false) {
-		return false;
-	}
+// A function that will create a string of zeroes that are the length
+// of the number of bytes in each sector of the file system.
+DeviceDriverFileSystem.prototype.createZeroedOutData = function() {
 	var zeroedOutData = "";
 	for (var i = 0; i < FS_NUM_BYTES; i++) {
 		zeroedOutData += "0";
 	}
+	return zeroedOutData;
+}
+
+// Full format, completely zeroes out everything in the file system
+DeviceDriverFileSystem.prototype.format = function() {
+	if (this.supportsHtml5Storage() === false) {
+		return false;
+	}
+	var zeroedOutData = this.createZeroedOutData();
 	for (var track = 0; track < FS_TRACKS; track++) {
 		for (var sector = 0; sector < FS_SECTORS; sector++) {
 			for (var block = 0; block < FS_BLOCKS; block++) {
@@ -56,6 +64,109 @@ DeviceDriverFileSystem.prototype.format = function() {
 
 DeviceDriverFileSystem.prototype.makeKey = function(t, s, b) {
 	return String(t) + String(s) + String(b);
+}
+
+DeviceDriverFileSystem.prototype.createFile = function(name) {
+	// Ensure that the name for this file is not too big.
+	// We subtract for from the number of bytes because the "metadata"
+	// of each entry is 4 bytes long.
+	if (name.length > (FS_NUM_BYTES - 4)) {
+		return false;
+	}
+	// First, check to ensure that the filesystem is in the proper
+	// state and could potentially handle a write to it
+	if (!this.fileSystemReady()) {
+		return false;
+	}
+	// Find the next available directory entry
+	var theDirectoryEntry = this.findNextAvailableDirEntry();
+	// Ensure that we found an applicable dir entry
+	if (theDirectoryEntry === -1) {
+		return false;
+	}
+	// Find the next available file entry
+	var theFileEntry = this.findNextAvailableFileEntry();
+	// Ensure that we found an applicable file entry
+	if (theFileEntry === -1) {
+		return false;
+	}
+	var dirMetaData = "1" + theFileEntry,
+		dirData = this.formatString(name),
+		fileMetaData = "1---",
+		fileData = this.formatString("");
+	// Actually save the data to the file system
+	localStorage.setItem(theDirectoryEntry, (dirMetaData + dirData));
+	localStorage.setItem(theFileEntry, (fileMetaData + fileData));
+	// Update the output
+	this.printToScreen();
+	// This was a success
+	return true;
+}
+
+// Formats a string of data to be stored at a single sector
+DeviceDriverFileSystem.prototype.formatString = function(str) {
+	var formattedString = "";
+	for (var i = 0; i < str.length; i++) {
+		formattedString += str.charCodeAt(i).toString(16)
+	}
+	return this.padDataString(formattedString);
+}
+
+DeviceDriverFileSystem.prototype.padDataString = function(formattedString) {
+	var zeroedOutData = this.createZeroedOutData();
+	return (formattedString + zeroedOutData).slice(0, FS_NUM_BYTES - 4);
+}
+
+// Returns the key of the metadata area representing the next available directory entry
+// if it finds one. Returns -1 if there are no available directory entries left.
+DeviceDriverFileSystem.prototype.findNextAvailableDirEntry = function() {
+	for (var sector = 0; sector < FS_SECTORS; sector++) {
+		for (var block = 0; block < FS_BLOCKS; block++) {
+			// We will search through the metadata which solely resides in sector 0
+			var thisKey = this.makeKey(0, sector, block),
+				thisData = localStorage.getItem(thisKey);
+			if (thisData[0] === "0") {
+				return thisKey;
+			}
+		}
+	}
+	return -1;
+}
+
+// Returns the key of the next available file entry.
+// Returns -1 if there are no available file entries left.
+DeviceDriverFileSystem.prototype.findNextAvailableFileEntry = function() {
+	// Our metadata lives in track 0, and the file data starts in track 1
+	for (var track = 1; track < FS_TRACKS; track++) {
+		for (var sector = 0; sector < FS_SECTORS; sector++) {
+			for (var block = 0; block < FS_BLOCKS; block++) {
+				var thisKey = this.makeKey(track, sector, block),
+					thisData = localStorage.getItem(thisKey);
+				if (thisData[0] === "0") {
+					return thisKey;
+				}
+			}
+		}
+	}
+	return -1;
+}
+
+// A test to ensure that all of the Tracks, Sectors, and Blocks
+// are present in the filesystem
+DeviceDriverFileSystem.prototype.fileSystemReady = function() {
+	try {
+		for (var track = 0; track < FS_TRACKS; track++) {
+			for (var sector = 0; sector < FS_SECTORS; sector++) {
+				for (var block = 0; block < FS_BLOCKS; block++) {
+					var thisKey = this.makeKey(track, sector, block),
+						thisData = localStorage.getItem(thisKey);
+				}
+			}
+		}
+		return true;
+	} catch (e) {
+		return false;
+	}
 }
 
 // Method to determine if the browser that the user is using supports
@@ -81,7 +192,7 @@ DeviceDriverFileSystem.prototype.printToScreen = function() {
 						thisData = localStorage.getItem(thisKey);
 					output += '<tr><td>' + thisKey + '</td>' +
 						'<td>' + thisData.substring(0, 4) + '</td>'+
-						'<td>' + thisData.substring(5) + '</td></tr>';
+						'<td>' + thisData.substring(4) + '</td></tr>';
 				}
 			}
 		}
