@@ -38,7 +38,7 @@ function krnBootstrap()      // Page 8.
 
 	// Load the File System Device Driver
 	krnTrace("Loading the file system device driver");
-	_FileSystem = new FileSystemDD();
+	_FileSystem = new DeviceDriverFileSystem();
 	_FileSystem.driverEntry();
 	krnTrace(_FileSystem.status);
 

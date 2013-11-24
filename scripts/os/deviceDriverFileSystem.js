@@ -1,18 +1,25 @@
 /* ------------
-	fileSystemDD.js
-	  __ _ _      __           _                    ___   ___
-	 / _(_) | ___/ _\_   _ ___| |_ ___ _ __ ___    /   \ /   \
-	| |_| | |/ _ \ \| | | / __| __/ _ \ '_ ` _ \  / /\ // /\ /
-	|  _| | |  __/\ \ |_| \__ \ ||  __/ | | | | |/ /_/// /_//
-	|_| |_|_|\___\__/\__, |___/\__\___|_| |_| |_/___,'/___,'
-				 |___/
+	deviceDriverFileSystem.js
+
+	     _            _             ___      _
+	  __| | _____   _(_) ___ ___   /   \_ __(_)_   _____ _ __
+	 / _` |/ _ \ \ / / |/ __/ _ \ / /\ / '__| \ \ / / _ \ '__|
+	| (_| |  __/\ V /| | (_|  __// /_//| |  | |\ V /  __/ |
+	 \__,_|\___| \_/ |_|\___\___/___,' |_|  |_| \_/ \___|_|
+
+	   ___ _ _      __           _
+	  / __(_) | ___/ _\_   _ ___| |_ ___ _ __ ___
+	 / _\ | | |/ _ \ \| | | / __| __/ _ \ '_ ` _ \
+	/ /   | | |  __/\ \ |_| \__ \ ||  __/ | | | | |
+	\/    |_|_|\___\__/\__, |___/\__\___|_| |_| |_|
+	                   |___/
 
 ------------ */
 
 // "Inherit" from prototype DeviceDriver in deviceDriver.js.
-FileSystemDD.prototype = new DeviceDriver;
+DeviceDriverFileSystem.prototype = new DeviceDriver;
 
-function FileSystemDD() {
+function DeviceDriverFileSystem() {
 	// Override the base method pointers.
 	this.driverEntry = krnFileSystemDriverEntry;
 	this.isr = krnFileSystemISR;
@@ -28,7 +35,7 @@ function krnFileSystemISR(params) {
 
 }
 
-FileSystemDD.prototype.format = function() {
+DeviceDriverFileSystem.prototype.format = function() {
 	if (this.supportsHtml5Storage() === false) {
 		return false;
 	}
@@ -47,14 +54,14 @@ FileSystemDD.prototype.format = function() {
 	return true;
 }
 
-FileSystemDD.prototype.makeKey = function(t, s, b) {
+DeviceDriverFileSystem.prototype.makeKey = function(t, s, b) {
 	return String(t) + String(s) + String(b);
 }
 
 // Method to determine if the browser that the user is using supports
 // the HTML5 localStorage
 // Taken from http://diveintohtml5.info/storage.html
-FileSystemDD.prototype.supportsHtml5Storage = function() {
+DeviceDriverFileSystem.prototype.supportsHtml5Storage = function() {
 	try {
 		return 'localStorage' in window && window['localStorage'] !== null;
 	} catch (e) {
@@ -62,7 +69,7 @@ FileSystemDD.prototype.supportsHtml5Storage = function() {
 	}
 }
 
-FileSystemDD.prototype.printToScreen = function() {
+DeviceDriverFileSystem.prototype.printToScreen = function() {
 	var diskDiv = $('#divFileSystemWrapper'),
 		output = '<tbody>';
 
