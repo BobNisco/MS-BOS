@@ -23,6 +23,12 @@ function DeviceDriverFileSystem() {
 	// Override the base method pointers.
 	this.driverEntry = krnFileSystemDriverEntry;
 	this.isr = krnFileSystemISR;
+	// Constants for the sizes of various file system components
+	this.tracks = 4;
+	this.sectors = 8;
+	this.blocks = 8;
+	this.numberOfBytes = 64;
+	this.metaDataSize = 4;
 }
 
 function krnFileSystemDriverEntry() {
@@ -39,7 +45,7 @@ function krnFileSystemISR(params) {
 // of the number of bytes in each sector of the file system.
 DeviceDriverFileSystem.prototype.createZeroedOutData = function() {
 	var zeroedOutData = "";
-	for (var i = 0; i < FS_NUM_BYTES; i++) {
+	for (var i = 0; i < this.numberOfBytes; i++) {
 		zeroedOutData += "0";
 	}
 	return zeroedOutData;
@@ -51,9 +57,9 @@ DeviceDriverFileSystem.prototype.format = function() {
 		return false;
 	}
 	var zeroedOutData = this.createZeroedOutData();
-	for (var track = 0; track < FS_TRACKS; track++) {
-		for (var sector = 0; sector < FS_SECTORS; sector++) {
-			for (var block = 0; block < FS_BLOCKS; block++) {
+	for (var track = 0; track < this.tracks; track++) {
+		for (var sector = 0; sector < this.sectors; sector++) {
+			for (var block = 0; block < this.blocks; block++) {
 				localStorage.setItem(this.makeKey(track, sector, block), zeroedOutData);
 			}
 		}
@@ -68,9 +74,8 @@ DeviceDriverFileSystem.prototype.makeKey = function(t, s, b) {
 
 DeviceDriverFileSystem.prototype.createFile = function(name) {
 	// Ensure that the name for this file is not too big.
-	// We subtract for from the number of bytes because the "metadata"
-	// of each entry is 4 bytes long.
-	if (name.length > (FS_NUM_BYTES - 4)) {
+	// We subtract the size of the metadata to ensure that the name will fit
+	if (name.length > (this.numberOfBytes - this.metaDataSize)) {
 		return false;
 	}
 	// First, check to ensure that the filesystem is in the proper
@@ -114,14 +119,14 @@ DeviceDriverFileSystem.prototype.formatString = function(str) {
 
 DeviceDriverFileSystem.prototype.padDataString = function(formattedString) {
 	var zeroedOutData = this.createZeroedOutData();
-	return (formattedString + zeroedOutData).slice(0, FS_NUM_BYTES - 4);
+	return (formattedString + zeroedOutData).slice(0, this.numberOfBytes - this.metaDataSize);
 }
 
 // Returns the key of the metadata area representing the next available directory entry
 // if it finds one. Returns -1 if there are no available directory entries left.
 DeviceDriverFileSystem.prototype.findNextAvailableDirEntry = function() {
-	for (var sector = 0; sector < FS_SECTORS; sector++) {
-		for (var block = 0; block < FS_BLOCKS; block++) {
+	for (var sector = 0; sector < this.sectors; sector++) {
+		for (var block = 0; block < this.blocks; block++) {
 			// We will search through the metadata which solely resides in sector 0
 			var thisKey = this.makeKey(0, sector, block),
 				thisData = localStorage.getItem(thisKey);
@@ -137,9 +142,9 @@ DeviceDriverFileSystem.prototype.findNextAvailableDirEntry = function() {
 // Returns -1 if there are no available file entries left.
 DeviceDriverFileSystem.prototype.findNextAvailableFileEntry = function() {
 	// Our metadata lives in track 0, and the file data starts in track 1
-	for (var track = 1; track < FS_TRACKS; track++) {
-		for (var sector = 0; sector < FS_SECTORS; sector++) {
-			for (var block = 0; block < FS_BLOCKS; block++) {
+	for (var track = 1; track < this.tracks; track++) {
+		for (var sector = 0; sector < this.sectors; sector++) {
+			for (var block = 0; block < this.blocks; block++) {
 				var thisKey = this.makeKey(track, sector, block),
 					thisData = localStorage.getItem(thisKey);
 				if (thisData[0] === "0") {
@@ -155,9 +160,9 @@ DeviceDriverFileSystem.prototype.findNextAvailableFileEntry = function() {
 // are present in the filesystem
 DeviceDriverFileSystem.prototype.fileSystemReady = function() {
 	try {
-		for (var track = 0; track < FS_TRACKS; track++) {
-			for (var sector = 0; sector < FS_SECTORS; sector++) {
-				for (var block = 0; block < FS_BLOCKS; block++) {
+		for (var track = 0; track < this.tracks; track++) {
+			for (var sector = 0; sector < this.sectors; sector++) {
+				for (var block = 0; block < this.blocks; block++) {
 					var thisKey = this.makeKey(track, sector, block),
 						thisData = localStorage.getItem(thisKey);
 				}
@@ -185,9 +190,9 @@ DeviceDriverFileSystem.prototype.printToScreen = function() {
 		output = '<tbody>';
 
 	try {
-		for (var track = 0; track < FS_TRACKS; track++) {
-			for (var sector = 0; sector < FS_SECTORS; sector++) {
-				for (var block = 0; block < FS_BLOCKS; block++) {
+		for (var track = 0; track < this.tracks; track++) {
+			for (var sector = 0; sector < this.sectors; sector++) {
+				for (var block = 0; block < this.blocks; block++) {
 					var thisKey = this.makeKey(track, sector, block),
 						thisData = localStorage.getItem(thisKey);
 					output += '<tr><td>' + thisKey + '</td>' +

@@ -87,11 +87,6 @@ var krnKeyboardDriver = null;
 // File System stuffz
 // _FileSystem is initialized in krnBootstrap()
 var _FileSystem = null;
-// Constants for the sizes of various file system components
-var FS_TRACKS = 4;
-var FS_SECTORS = 8;
-var FS_BLOCKS = 8;
-var FS_NUM_BYTES = 64;
 
 // For testing...
 var _GLaDOS = null;
