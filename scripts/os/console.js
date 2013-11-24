@@ -70,11 +70,22 @@ function CLIconsole() {
 		// decided to write one function and use the term "text" to connote string or char.
 		if (text !== "")
 		{
-			// Draw the text at the current X and Y coordinates.
-			_DrawingContext.drawText(this.CurrentFont, this.CurrentFontSize, this.CurrentXPosition, this.CurrentYPosition, text);
-			// Move the current X position.
-			var offset = _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, text);
-			this.CurrentXPosition = this.CurrentXPosition + offset;
+			// Handle the text character by character for horizontal scrolling
+			for (var i = 0; i < text.length; i++) {
+				// Draw the text at the current X and Y coordinates.
+				_DrawingContext.drawText(this.CurrentFont, this.CurrentFontSize, this.CurrentXPosition, this.CurrentYPosition, text[i]);
+				// Move the current X position.
+				var offset = _DrawingContext.measureText(this.CurrentFont, this.CurrentFontSize, text[i]),
+					possibleNewXPosition = this.CurrentXPosition + offset;
+				// Check to see if we need to advance to the next line so that text can "scroll"
+				// to the next line rather than be cut off.
+				// Add 5 so that we can give it a bit of padding for individual letters
+				if (possibleNewXPosition + 5 >= _Canvas.width) {
+					this.advanceLine();
+				} else {
+					this.CurrentXPosition = possibleNewXPosition;
+				}
+			}
 		}
 	};
 
