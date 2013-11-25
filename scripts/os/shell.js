@@ -452,6 +452,42 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
+	// write
+	sc = new ShellCommand();
+	sc.command = "write";
+	sc.description = "<name> <data> - writes data to the file with the given name";
+	sc.function = function(args) {
+		if (args.length > 0) {
+			var data = "";
+			for (var i = 1; i < args.length; i++) {
+				data += args[i];
+			}
+			var result = _FileSystem.writeFile(args[0], data);
+			_StdIn.putText(result.message);
+		} else {
+			_StdIn.putText("Usage: write <name> <data> - Please supply a file name and data");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
+	// read
+	sc = new ShellCommand();
+	sc.command = "read";
+	sc.description = "<name> - reads a file with the given name";
+	sc.function = function(args) {
+		if (args.length > 0) {
+			var result = _FileSystem.readFile(args[0]);
+			if (result.status === 'success') {
+				_StdIn.putText(result.data);
+			} else {
+				_StdIn.putText(result.message);
+			}
+		} else {
+			_StdIn.putText("Usage: read <name> - Please supply a file name");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
 	//
 	// Display the initial prompt.
 	this.putPrompt();

@@ -108,6 +108,106 @@ DeviceDriverFileSystem.prototype.createFile = function(name) {
 	return true;
 }
 
+DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
+	var result = {
+		'status' : 'error',
+		'message' : '',
+		'data' : '',
+	};
+	// First, check to ensure that the filesystem is in the proper
+	// state and could potentially handle a write to it
+	if (!this.fileSystemReady()) {
+		result.message = 'The file system is not ready. Please format it and try again.';
+		return result;
+	}
+	// Find the directory with the given file name
+	var theDir = this.findDirByName(name);
+	if (theDir === -1) {
+		result.message = 'Could not find a file with the given name "' + name + '"';
+		return result;
+	}
+	var dirBlock = this.readData(theDir);
+
+	var encodedData = this.formatString(data),
+		encodedDataBlocks = [];
+	console.log(encodedData);
+	if (encodedData.length > (this.numberOfBytes - this.metaDataSize)) {
+		// Split the data up into properly sized chunks in case we need to
+		// write to multiple blocks
+		while (encodedData.length > (this.numberOfBytes - this.metaDataSize)) {
+			encodedDataBlocks.push(encodedData.slice(0, (this.numberOfBytes - this.metaDataSize)));
+			encodedData = encodedData.slice(this.numberOfBytes - this.metaDataSize);
+		}
+	} else {
+		// The encoded data is not longer than the possible length
+		// so just put it onto the array
+		encodedDataBlocks.push(encodedData);
+	}
+	var currentBlockToWriteTo = dirBlock.meta.slice(1, this.metaDataSize);
+	console.log(encodedDataBlocks);
+	for (var i = 0; i < encodedDataBlocks.length; i++) {
+		console.log(currentBlockToWriteTo);
+		if (currentBlockToWriteTo === -1) {
+			result.status = 'error';
+			result.message = 'Not enough space on disk to write full file';
+			return result;
+		}
+		localStorage.setItem(currentBlockToWriteTo, encodedDataBlocks[i]);
+		currentBlockToWriteTo = this.findNextAvailableDirEntry();
+	}
+	this.printToScreen();
+	result.status = 'success';
+	result.message = 'Successfully wrote the file to disk';
+	return result;
+}
+
+DeviceDriverFileSystem.prototype.readFile = function(name) {
+	var result = {
+		'status' : 'error',
+		'message' : '',
+		'data' : '',
+	};
+	// First, check to ensure that the filesystem is in the proper
+	// state and could potentially handle a write to it
+	if (!this.fileSystemReady()) {
+		result.message = 'The file system is not ready. Please format it and try again.';
+		return result;
+	}
+	// Find the directory with the given file name
+	var theDir = this.findDirByName(name);
+	if (theDir === -1) {
+		result.message = 'Could not find a file with the given name "' + name + '"';
+		return result;
+	}
+	var dirBlock = this.readData(theDir);
+	var dirData = this.readSectors(dirBlock.meta.slice(1, this.metaDataSize));
+	result.status = 'success';
+	result.message = 'Successfully read the file contents.';
+	result.data = dirData;
+	return result;
+}
+
+// This function is named readSectors because it will follow through to all
+// of the linked sectors starting with the key that is passed in as a parameter.
+DeviceDriverFileSystem.prototype.readSectors = function(key) {
+	var currentData = this.readData(key),
+		returnString = currentData.data;
+	while (this.sectorHasLink(currentData.meta)) {
+		currentData = this.readData(currentData.meta.slice(1, this.metaDataSize));
+		returnString += currentData.data;
+	}
+	return returnString;
+}
+
+DeviceDriverFileSystem.prototype.sectorHasLink = function(metaData) {
+	for (var i = 1; i < this.metaDataSize; i++) {
+		if (metaData.charAt(i) != "-") {
+			return true;
+		}
+	}
+	return false;
+}
+
 // Formats a string of data to be stored at a single sector
 DeviceDriverFileSystem.prototype.formatString = function(str) {
 	var formattedString = "";
@@ -115,6 +215,26 @@ DeviceDriverFileSystem.prototype.formatString = function(str) {
 		formattedString += str.charCodeAt(i).toString(16)
 	}
 	return this.padDataString(formattedString);
+}
+
+DeviceDriverFileSystem.prototype.readData = function(key) {
+	var data = localStorage.getItem(key),
+		returnValue = {
+			"meta" : "",
+			"data" : "",
+		};
+	// Read the first 4 bits and put that into the meta section
+	for (var i = 0; i < this.metaDataSize; i++) {
+		returnValue.meta += data.charAt(i);
+	}
+	// We need to read in sets of 2 hex digits at a time
+	for (var i = this.metaDataSize; i < data.length; i += 2) {
+		var ascii = parseInt(data.charAt(i) + data.charAt(i + 1), 16);
+		if (ascii !== 0) {
+			returnValue.data += String.fromCharCode(ascii);
+		}
+	}
+	return returnValue;
 }
 
 DeviceDriverFileSystem.prototype.padDataString = function(formattedString) {
@@ -131,6 +251,20 @@ DeviceDriverFileSystem.prototype.findNextAvailableDirEntry = function() {
 			var thisKey = this.makeKey(0, sector, block),
 				thisData = localStorage.getItem(thisKey);
 			if (thisData[0] === "0") {
+				return thisKey;
+			}
+		}
+	}
+	return -1;
+}
+
+DeviceDriverFileSystem.prototype.findDirByName = function(name) {
+	for (var sector = 0; sector < this.sectors; sector++) {
+		for (var block = 0; block < this.blocks; block++) {
+			// We will search through the metadata which solely resides in sector 0
+			var thisKey = this.makeKey(0, sector, block),
+				thisData = this.readData(thisKey);
+			if (thisData.data === name) {
 				return thisKey;
 			}
 		}
