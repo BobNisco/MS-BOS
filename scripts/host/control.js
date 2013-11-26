@@ -203,4 +203,15 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	var programToggleButton = $('#program-toggle-button'),
+		programList = $('#program-list');
+	programToggleButton.on('click', function(e) {
+		e.preventDefault();
+		if (programList.hasClass('hide')) {
+			programList.removeClass('hide');
+		} else {
+			programList.addClass('hide');
+		}
+	});
 });
