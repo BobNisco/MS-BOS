@@ -440,12 +440,8 @@ function shellInit() {
 	sc.description = "<name> - creates a file with the given name";
 	sc.function = function(args) {
 		if (args.length > 0) {
-			var success = _FileSystem.createFile(args[0]);
-			if (success) {
-				_StdIn.putText("Created file: " + args[0]);
-			} else {
-				_StdIn.putText("Error while creating file.");
-			}
+			var result = _FileSystem.createFile(args[0]);
+			_StdIn.putText(result.message);
 		} else {
 			_StdIn.putText("Usage: create <name> - Please supply a file name");
 		}

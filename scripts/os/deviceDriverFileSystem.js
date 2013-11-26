@@ -73,6 +73,11 @@ DeviceDriverFileSystem.prototype.makeKey = function(t, s, b) {
 }
 
 DeviceDriverFileSystem.prototype.createFile = function(name) {
+	var result = {
+		'status' : 'error',
+		'message' : '',
+		'data' : '',
+	};
 	// Ensure that the name for this file is not too big.
 	// We subtract the size of the metadata to ensure that the name will fit
 	if (name.length > (this.numberOfBytes - this.metaDataSize)) {
@@ -81,19 +86,28 @@ DeviceDriverFileSystem.prototype.createFile = function(name) {
 	// First, check to ensure that the filesystem is in the proper
 	// state and could potentially handle a write to it
 	if (!this.fileSystemReady()) {
-		return false;
+		result.message = 'The file system is not ready. Please format it and try again.';
+		return result;
+	}
+	// Find the directory with the given file name
+	var theDir = this.findDirByName(name);
+	if (theDir !== -1) {
+		result.message = 'There is already a file with the name "' + name + '"';
+		return result;
 	}
 	// Find the next available directory entry
 	var theDirectoryEntry = this.findNextAvailableDirEntry();
 	// Ensure that we found an applicable dir entry
 	if (theDirectoryEntry === -1) {
-		return false;
+		result.message = 'No more available directory entries.';
+		return result;
 	}
 	// Find the next available file entry
 	var theFileEntry = this.findNextAvailableFileEntry();
 	// Ensure that we found an applicable file entry
 	if (theFileEntry === -1) {
-		return false;
+		result.message = 'No more available file entries.';
+		return result;
 	}
 	var dirMetaData = "1" + theFileEntry,
 		dirData = this.formatStringForSingleSector(name),
@@ -105,7 +119,9 @@ DeviceDriverFileSystem.prototype.createFile = function(name) {
 	// Update the output
 	this.printToScreen();
 	// This was a success
-	return true;
+	result.status = 'success';
+	result.message = 'Successfully created the file with name "' + name + '"';
+	return result;
 }
 
 DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
