@@ -156,7 +156,7 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 	}
 	// We will iterate over the encodedDataBlocks array, keeping track of which
 	// blocks point to other blocks.
-	var currentBlockToWriteTo = dirBlock.meta.slice(1, this.metaDataSize),
+	var currentBlockToWriteTo = this.getChainAddress(dirBlock),
 		lastBlock = "---";
 	for (var i = 0; i < encodedDataBlocks.length; i++) {
 		// We ran out of space on our disk! This is bad, now we have a partially
@@ -204,8 +204,8 @@ DeviceDriverFileSystem.prototype.readFile = function(name) {
 		result.message = 'Could not find a file with the given name "' + name + '"';
 		return result;
 	}
-	var dirBlock = this.readData(theDir);
-	var dirData = this.readSectors(dirBlock.meta.slice(1, this.metaDataSize));
+	var dirBlock = this.readData(theDir),
+		dirData = this.readSectors(this.getChainAddress(dirBlock));
 	result.status = 'success';
 	result.message = 'Successfully read the file contents.';
 	result.data = dirData;
@@ -232,15 +232,15 @@ DeviceDriverFileSystem.prototype.deleteFile = function(name) {
 	}
 	var currentBlock = this.readData(theDir),
 		zeroedOutData = this.createZeroedOutData(),
-		affectedBlocks = [currentBlock.meta.slice(1, this.metaDataSize)];
+		affectedBlocks = [this.getChainAddress(currentBlock)];
 
 	// Add the dir listing to the affected blocks
 	affectedBlocks.push(currentBlock.key);
 
 	// Walk each of the blocks to find which blocks we need to delete
 	while (this.blockHasLink(currentBlock.meta)) {
-		affectedBlocks.push(currentBlock.meta.slice(1, this.metaDataSize));
-		currentBlock = this.readData(currentBlock.meta.slice(1, this.metaDataSize));
+		affectedBlocks.push(this.getChainAddress(currentBlock));
+		currentBlock = this.readData(this.getChainAddress(currentBlock));
 	}
 	// Zero out the data for each block
 	for (var i = 0; i < affectedBlocks.length; i++) {
@@ -258,7 +258,7 @@ DeviceDriverFileSystem.prototype.readSectors = function(key) {
 	var currentData = this.readData(key),
 		returnString = currentData.data;
 	while (this.blockHasLink(currentData.meta)) {
-		currentData = this.readData(currentData.meta.slice(1, this.metaDataSize));
+		currentData = this.readData(this.getChainAddress(currentData));
 		returnString += currentData.data;
 	}
 	return returnString;
@@ -319,8 +319,8 @@ DeviceDriverFileSystem.prototype.findNextAvailableDirEntry = function() {
 		for (var block = 0; block < this.blocks; block++) {
 			// We will search through the metadata which solely resides in sector 0
 			var thisKey = this.makeKey(0, sector, block),
-				thisData = localStorage.getItem(thisKey);
-			if (thisData[0] === "0") {
+				thisData = this.readData(thisKey);
+			if (!this.blockIsActive(thisData)) {
 				return thisKey;
 			}
 		}
@@ -350,8 +350,8 @@ DeviceDriverFileSystem.prototype.findNextAvailableFileEntry = function() {
 		for (var sector = 0; sector < this.sectors; sector++) {
 			for (var block = 0; block < this.blocks; block++) {
 				var thisKey = this.makeKey(track, sector, block),
-					thisData = localStorage.getItem(thisKey);
-				if (thisData[0] === "0") {
+					thisData = this.readData(thisKey);
+				if (!this.blockIsActive(thisData)) {
 					return thisKey;
 				}
 			}
@@ -377,6 +377,18 @@ DeviceDriverFileSystem.prototype.fileSystemReady = function() {
 		return false;
 	}
 }
+
+DeviceDriverFileSystem.prototype.blockIsActive = function(block) {
+	var activeBit = block.meta.slice(0, 1);
+	if (activeBit === "0") {
+		return false;
+	}
+	return true;
+};
+
+DeviceDriverFileSystem.prototype.getChainAddress = function(block) {
+	return block.meta.slice(1, this.metaDataSize);
+};
 
 // Method to determine if the browser that the user is using supports
 // the HTML5 localStorage
