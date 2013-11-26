@@ -27,13 +27,16 @@ function DeviceDriverFileSystem() {
 	this.tracks = 4;
 	this.sectors = 8;
 	this.blocks = 8;
+	// Number of bytes in a block
 	this.numberOfBytes = 64;
+	// How many bytes of the block are dedicated to metadata
 	this.metaDataSize = 4;
 }
 
 function krnFileSystemDriverEntry() {
 	// Initialization routine
-	this.status = "loaded";
+	this.status = "file system loaded";
+	// Show the file system on the page
 	this.printToScreen();
 }
 
@@ -41,8 +44,13 @@ function krnFileSystemISR(params) {
 
 }
 
+DeviceDriverFileSystem.prototype.dataSize = function() {
+	// Number of data bytes in a block
+	return this.numberOfBytes - this.metaDataSize;
+}
+
 // A function that will create a string of zeroes that are the length
-// of the number of bytes in each sector of the file system.
+// of the number of bytes in each block of the file system.
 DeviceDriverFileSystem.prototype.createZeroedOutData = function() {
 	var zeroedOutData = "";
 	for (var i = 0; i < this.numberOfBytes; i++) {
@@ -53,7 +61,7 @@ DeviceDriverFileSystem.prototype.createZeroedOutData = function() {
 
 // Full format, completely zeroes out everything in the file system
 DeviceDriverFileSystem.prototype.format = function() {
-	if (this.supportsHtml5Storage() === false) {
+	if (!this.supportsHtml5Storage()) {
 		return false;
 	}
 	var zeroedOutData = this.createZeroedOutData();
@@ -79,9 +87,9 @@ DeviceDriverFileSystem.prototype.createFile = function(name) {
 		'data' : '',
 	};
 	// Ensure that the name for this file is not too big.
-	// We subtract the size of the metadata to ensure that the name will fit
-	if (name.length > (this.numberOfBytes - this.metaDataSize)) {
-		return false;
+	if (this.formatString(name).length > this.dataSize()) {
+		result.message = 'The file name provided is too long.';
+		return result;
 	}
 	// First, check to ensure that the filesystem is in the proper
 	// state and could potentially handle a write to it
@@ -110,9 +118,9 @@ DeviceDriverFileSystem.prototype.createFile = function(name) {
 		return result;
 	}
 	var dirMetaData = "1" + theFileEntry,
-		dirData = this.formatStringForSingleSector(name),
+		dirData = this.formatStringForSingleBlock(name),
 		fileMetaData = "1---",
-		fileData = this.formatStringForSingleSector("");
+		fileData = this.formatStringForSingleBlock("");
 	// Actually save the data to the file system
 	localStorage.setItem(theDirectoryEntry, (dirMetaData + dirData));
 	localStorage.setItem(theFileEntry, (fileMetaData + fileData));
@@ -151,22 +159,22 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 	while (encodedData.length) {
 		// Chop the data up into blocks and pad it with zeroes, if needed
 		encodedDataBlocks.push(this.padDataString(
-			encodedData.slice(0, (this.numberOfBytes - this.metaDataSize))));
-		encodedData = encodedData.slice(this.numberOfBytes - this.metaDataSize);
+			encodedData.slice(0, this.dataSize())));
+		encodedData = encodedData.slice(this.dataSize());
 	}
 	// We will iterate over the encodedDataBlocks array, keeping track of which
 	// blocks point to other blocks.
 	var currentBlockToWriteTo = this.getChainAddress(dirBlock),
 		lastBlock = "---";
 	for (var i = 0; i < encodedDataBlocks.length; i++) {
-		// We ran out of space on our disk! This is bad, now we have a partially
-		// written file sitting on the disk. Blame the user.
 		if (currentBlockToWriteTo === -1) {
+			// We ran out of space on our disk! This is bad, now we have a partially
+			// written file sitting on the disk. Blame the user.
 			result.status = 'error';
 			result.message = 'Not enough space on disk to write full file';
 			return result;
 		}
-		// Write this chunk of data to the filesystem
+		// Write this block of data to the filesystem
 		localStorage.setItem(currentBlockToWriteTo, ("1---" + encodedDataBlocks[i]));
 		// Check if we need to update the metadata for our previously written block of data
 		// so that it can point to this block of data in the chain metadata
@@ -205,7 +213,7 @@ DeviceDriverFileSystem.prototype.readFile = function(name) {
 		return result;
 	}
 	var dirBlock = this.readData(theDir),
-		dirData = this.readSectors(this.getChainAddress(dirBlock));
+		dirData = this.readBlocks(this.getChainAddress(dirBlock));
 	result.status = 'success';
 	result.message = 'Successfully read the file contents.';
 	result.data = dirData;
@@ -252,9 +260,9 @@ DeviceDriverFileSystem.prototype.deleteFile = function(name) {
 	return result;
 }
 
-// This function is named readSectors because it will follow through to all
-// of the linked sectors starting with the key that is passed in as a parameter.
-DeviceDriverFileSystem.prototype.readSectors = function(key) {
+// This function is named readBlocks because it will follow through to all
+// of the linked blocks starting with the key that is passed in as a parameter.
+DeviceDriverFileSystem.prototype.readBlocks = function(key) {
 	var currentData = this.readData(key),
 		returnString = currentData.data;
 	while (this.blockHasLink(currentData.meta)) {
@@ -273,8 +281,8 @@ DeviceDriverFileSystem.prototype.blockHasLink = function(metaData) {
 	return false;
 }
 
-// Formats a string of data to be stored at a single sector
-DeviceDriverFileSystem.prototype.formatStringForSingleSector = function(str) {
+// Formats a string of data to be stored at a single block
+DeviceDriverFileSystem.prototype.formatStringForSingleBlock = function(str) {
 	return this.padDataString(this.formatString(str));
 }
 
@@ -309,7 +317,7 @@ DeviceDriverFileSystem.prototype.readData = function(key) {
 
 DeviceDriverFileSystem.prototype.padDataString = function(formattedString) {
 	var zeroedOutData = this.createZeroedOutData();
-	return (formattedString + zeroedOutData).slice(0, this.numberOfBytes - this.metaDataSize);
+	return (formattedString + zeroedOutData).slice(0, this.dataSize());
 }
 
 // Returns the key of the metadata area representing the next available directory entry
@@ -363,6 +371,9 @@ DeviceDriverFileSystem.prototype.findNextAvailableFileEntry = function() {
 // A test to ensure that all of the Tracks, Sectors, and Blocks
 // are present in the filesystem
 DeviceDriverFileSystem.prototype.fileSystemReady = function() {
+	if (!this.supportsHtml5Storage()) {
+		return false;
+	}
 	try {
 		for (var track = 0; track < this.tracks; track++) {
 			for (var sector = 0; sector < this.sectors; sector++) {
