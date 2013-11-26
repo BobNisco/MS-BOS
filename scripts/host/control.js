@@ -73,15 +73,30 @@ function hostLog(msg, source)
 	// Note the REAL clock in milliseconds since January 1, 1970.
 	var now = new Date().getTime();
 
-	// Build the log string.
-	var str = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
+	// Build the log div
+	var str = "<div class=\"log-row\" data-msg=\"" + msg + "\">" + createLabelForSource(source) +
+		" ({ clock:" + clock + ", msg:" + msg + ", now:" + now  + " })</div>";
 
 	// Update the log console.
-	var taLog = document.getElementById("taLog");
-	taLog.value = str + taLog.value;
+	var taLog = $('#taLog'),
+		lastRow = taLog.children().first();
+	if (lastRow.data('msg') === 'Idle' && msg === 'Idle') {
+		lastRow.replaceWith(str);
+	} else {
+		taLog.html(str + taLog.html());
+	}
 	// Optionally update a log database or some streaming service.
 }
 
+function createLabelForSource(source) {
+	if (source === 'OS') {
+		return '<span class="label label-success">' + source + '</span>';
+	} else if (source === 'host') {
+		return '<span class="label label-danger">' + source + '</span>';
+	} else {
+		return '<span class="label label-primary">' + source + '</span>';
+	}
+}
 
 //
 // Control Events
