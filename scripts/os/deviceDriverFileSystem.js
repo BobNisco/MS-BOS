@@ -196,21 +196,61 @@ DeviceDriverFileSystem.prototype.readFile = function(name) {
 	return result;
 }
 
+DeviceDriverFileSystem.prototype.deleteFile = function(name) {
+	var result = {
+		'status' : 'error',
+		'message' : '',
+		'data' : '',
+	};
+	// First, check to ensure that the filesystem is in the proper
+	// state and could potentially handle a write to it
+	if (!this.fileSystemReady()) {
+		result.message = 'The file system is not ready. Please format it and try again.';
+		return result;
+	}
+	// Find the directory with the given file name
+	var theDir = this.findDirByName(name);
+	if (theDir === -1) {
+		result.message = 'Could not find a file with the given name "' + name + '"';
+		return result;
+	}
+	var currentBlock = this.readData(theDir),
+		zeroedOutData = this.createZeroedOutData(),
+		affectedBlocks = [currentBlock.meta.slice(1, this.metaDataSize)];
+
+	// Add the dir listing to the affected blocks
+	affectedBlocks.push(currentBlock.key);
+
+	// Walk each of the blocks to find which blocks we need to delete
+	while (this.blockHasLink(currentBlock.meta)) {
+		affectedBlocks.push(currentBlock.meta.slice(1, this.metaDataSize));
+		currentBlock = this.readData(currentBlock.meta.slice(1, this.metaDataSize));
+	}
+	// Zero out the data for each block
+	for (var i = 0; i < affectedBlocks.length; i++) {
+		localStorage.setItem(affectedBlocks[i], zeroedOutData);
+	}
+	this.printToScreen();
+	result.status = 'success';
+	result.message = 'Successfully deleted the file.';
+	return result;
+}
+
 // This function is named readSectors because it will follow through to all
 // of the linked sectors starting with the key that is passed in as a parameter.
 DeviceDriverFileSystem.prototype.readSectors = function(key) {
 	var currentData = this.readData(key),
 		returnString = currentData.data;
-	while (this.sectorHasLink(currentData.meta)) {
+	while (this.blockHasLink(currentData.meta)) {
 		currentData = this.readData(currentData.meta.slice(1, this.metaDataSize));
 		returnString += currentData.data;
 	}
 	return returnString;
 }
 
-DeviceDriverFileSystem.prototype.sectorHasLink = function(metaData) {
+DeviceDriverFileSystem.prototype.blockHasLink = function(metaData) {
 	for (var i = 1; i < this.metaDataSize; i++) {
-		if (metaData.charAt(i) != "-") {
+		if (metaData.charAt(i) !== "-") {
 			return true;
 		}
 	}
@@ -233,6 +273,7 @@ DeviceDriverFileSystem.prototype.formatString = function(str) {
 DeviceDriverFileSystem.prototype.readData = function(key) {
 	var data = localStorage.getItem(key),
 		returnValue = {
+			"key" : key,
 			"meta" : "",
 			"data" : "",
 		};

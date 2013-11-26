@@ -495,6 +495,20 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
+	// delete
+	sc = new ShellCommand();
+	sc.command = "delete";
+	sc.description = "<name> - deletes the file and contents with the given name";
+	sc.function = function(args) {
+		if (args.length > 0) {
+			var result = _FileSystem.deleteFile(args[0]);
+			_StdIn.putText(result.message);
+		} else {
+			_StdIn.putText("Usage: delete <name> - Please supply a file name");
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
 	//
 	// Display the initial prompt.
 	this.putPrompt();
