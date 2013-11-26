@@ -155,6 +155,8 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 		encodedData = this.formatString(data),
 		// We will break the data up into a blocks before writing it
 		encodedDataBlocks = [];
+	// Delete any blocks for this file
+	this.deleteFile(name, false);
 	// Split the data up into properly sized chunks.
 	while (encodedData.length) {
 		// Chop the data up into blocks and pad it with zeroes, if needed
@@ -220,7 +222,7 @@ DeviceDriverFileSystem.prototype.readFile = function(name) {
 	return result;
 }
 
-DeviceDriverFileSystem.prototype.deleteFile = function(name) {
+DeviceDriverFileSystem.prototype.deleteFile = function(name, deleteDirListing) {
 	var result = {
 		'status' : 'error',
 		'message' : '',
@@ -242,8 +244,14 @@ DeviceDriverFileSystem.prototype.deleteFile = function(name) {
 		zeroedOutData = this.createZeroedOutData(),
 		affectedBlocks = [this.getChainAddress(currentBlock)];
 
-	// Add the dir listing to the affected blocks
-	affectedBlocks.push(currentBlock.key);
+	// We will be utilizing this function in the shell command for "delete"
+	// and as a way to delete the blocks when we are writing over a file.
+	// We will want to delete the dir listing in the case of the shell command,
+	// and keep the dir listing in the case of writing a file.
+	if (deleteDirListing) {
+		// Add the dir listing to the affected blocks
+		affectedBlocks.push(currentBlock.key);
+	}
 
 	// Walk each of the blocks to find which blocks we need to delete
 	while (this.blockHasLink(currentBlock.meta)) {
