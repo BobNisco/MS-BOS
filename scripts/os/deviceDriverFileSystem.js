@@ -389,6 +389,34 @@ DeviceDriverFileSystem.prototype.fileSystemReady = function() {
 	}
 }
 
+DeviceDriverFileSystem.prototype.listDirectory = function() {
+	var result = {
+		'status' : 'error',
+		'message' : '',
+		'data' : [],
+	};
+	// First, check to ensure that the filesystem is in the proper
+	// state and could potentially handle a write to it
+	if (!this.fileSystemReady()) {
+		result.message = 'The file system is not ready. Please format it and try again.';
+		return result;
+	}
+
+	for (var sector = 0; sector < this.sectors; sector++) {
+		for (var block = 0; block < this.blocks; block++) {
+			// We will search through the metadata which solely resides in sector 0
+			var thisKey = this.makeKey(0, sector, block),
+				thisData = this.readData(thisKey);
+			if (this.blockIsActive(thisData)) {
+				result.data.push({'key' : thisData.key, 'name' : thisData.data});
+			}
+		}
+	}
+	result.status = 'success';
+	result.message = 'Successfully read the file system directory.';
+	return result;
+}
+
 DeviceDriverFileSystem.prototype.blockIsActive = function(block) {
 	var activeBit = block.meta.slice(0, 1);
 	if (activeBit === "0") {

@@ -505,6 +505,27 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
+	// ls
+	sc = new ShellCommand();
+	sc.command = "ls";
+	sc.description = " - lists the files currently stored on disk";
+	sc.function = function(args) {
+		var result = _FileSystem.listDirectory();
+		if (result.status === 'success') {
+			if (result.data.length) {
+				for (var i = 0; i < result.data.length; i++) {
+					_StdIn.putText(result.data[i].key + " : " + result.data[i].name);
+					_StdIn.advanceLine();
+				}
+			} else {
+				_StdIn.putText('No files currently stored on file system.');
+			}
+		} else {
+			_StdIn.putText(result.message);
+		}
+	};
+	this.commandList[this.commandList.length] = sc;
+
 	//
 	// Display the initial prompt.
 	this.putPrompt();
