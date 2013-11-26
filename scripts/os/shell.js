@@ -460,7 +460,14 @@ function shellInit() {
 		if (args.length > 0) {
 			var data = "";
 			for (var i = 1; i < args.length; i++) {
-				data += args[i];
+				// We want to add a space in between each argument, but only if
+				// we are at an arg that is not the first one, since we don't
+				// want to start the string with a space.
+				if (i > 1) {
+					data += " " + args[i];
+				} else {
+					data += args[i];
+				}
 			}
 			var result = _FileSystem.writeFile(args[0], data);
 			_StdIn.putText(result.message);

@@ -96,9 +96,9 @@ DeviceDriverFileSystem.prototype.createFile = function(name) {
 		return false;
 	}
 	var dirMetaData = "1" + theFileEntry,
-		dirData = this.formatString(name),
+		dirData = this.formatStringForSingleSector(name),
 		fileMetaData = "1---",
-		fileData = this.formatString("");
+		fileData = this.formatStringForSingleSector("");
 	// Actually save the data to the file system
 	localStorage.setItem(theDirectoryEntry, (dirMetaData + dirData));
 	localStorage.setItem(theFileEntry, (fileMetaData + fileData));
@@ -126,35 +126,44 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 		result.message = 'Could not find a file with the given name "' + name + '"';
 		return result;
 	}
-	var dirBlock = this.readData(theDir);
-
-	var encodedData = this.formatString(data),
+	var dirBlock = this.readData(theDir),
+		// Encode the whole string
+		encodedData = this.formatString(data),
+		// We will break the data up into a blocks before writing it
 		encodedDataBlocks = [];
-	console.log(encodedData);
-	if (encodedData.length > (this.numberOfBytes - this.metaDataSize)) {
-		// Split the data up into properly sized chunks in case we need to
-		// write to multiple blocks
-		while (encodedData.length > (this.numberOfBytes - this.metaDataSize)) {
-			encodedDataBlocks.push(encodedData.slice(0, (this.numberOfBytes - this.metaDataSize)));
-			encodedData = encodedData.slice(this.numberOfBytes - this.metaDataSize);
-		}
-	} else {
-		// The encoded data is not longer than the possible length
-		// so just put it onto the array
-		encodedDataBlocks.push(encodedData);
+	// Split the data up into properly sized chunks.
+	while (encodedData.length) {
+		// Chop the data up into blocks and pad it with zeroes, if needed
+		encodedDataBlocks.push(this.padDataString(
+			encodedData.slice(0, (this.numberOfBytes - this.metaDataSize))));
+		encodedData = encodedData.slice(this.numberOfBytes - this.metaDataSize);
 	}
-	var currentBlockToWriteTo = dirBlock.meta.slice(1, this.metaDataSize);
-	console.log(encodedDataBlocks);
+	// We will iterate over the encodedDataBlocks array, keeping track of which
+	// blocks point to other blocks.
+	var currentBlockToWriteTo = dirBlock.meta.slice(1, this.metaDataSize),
+		lastBlock = "---";
 	for (var i = 0; i < encodedDataBlocks.length; i++) {
-		console.log(currentBlockToWriteTo);
+		// We ran out of space on our disk! This is bad, now we have a partially
+		// written file sitting on the disk. Blame the user.
 		if (currentBlockToWriteTo === -1) {
 			result.status = 'error';
 			result.message = 'Not enough space on disk to write full file';
 			return result;
 		}
-		localStorage.setItem(currentBlockToWriteTo, encodedDataBlocks[i]);
-		currentBlockToWriteTo = this.findNextAvailableDirEntry();
+		// Write this chunk of data to the filesystem
+		localStorage.setItem(currentBlockToWriteTo, ("1---" + encodedDataBlocks[i]));
+		// Check if we need to update the metadata for our previously written block of data
+		// so that it can point to this block of data in the chain metadata
+		if (lastBlock !== '---') {
+			var lastBlockData = localStorage.getItem(lastBlock).slice(4),
+				lastBlockMetaData = "1" + currentBlockToWriteTo;
+			localStorage.setItem(lastBlock, (lastBlockMetaData + lastBlockData));
+		}
+		// Advance our pointers
+		lastBlock = currentBlockToWriteTo;
+		currentBlockToWriteTo = this.findNextAvailableFileEntry();
 	}
+	// Woohoo, update the display and return a success message, we did it!
 	this.printToScreen();
 	result.status = 'success';
 	result.message = 'Successfully wrote the file to disk';
@@ -209,12 +218,16 @@ DeviceDriverFileSystem.prototype.sectorHasLink = function(metaData) {
 }
 
 // Formats a string of data to be stored at a single sector
+DeviceDriverFileSystem.prototype.formatStringForSingleSector = function(str) {
+	return this.padDataString(this.formatString(str));
+}
+
 DeviceDriverFileSystem.prototype.formatString = function(str) {
 	var formattedString = "";
 	for (var i = 0; i < str.length; i++) {
 		formattedString += str.charCodeAt(i).toString(16)
 	}
-	return this.padDataString(formattedString);
+	return formattedString;
 }
 
 DeviceDriverFileSystem.prototype.readData = function(key) {
