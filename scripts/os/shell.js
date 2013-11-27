@@ -595,20 +595,19 @@ function shellParseInput(buffer)
 	// 1. Remove leading and trailing spaces.
 	buffer = trim(buffer);
 
-	// 2. Lower-case it.
-	buffer = buffer.toLowerCase();
-
-	// 3. Separate on spaces so we can determine the command and command-line args, if any.
+	// 2. Separate on spaces so we can determine the command and command-line args, if any.
 	var tempList = buffer.split(" ");
 
-	// 4. Take the first (zeroth) element and use that as the command.
-	var cmd = tempList.shift();  // Yes, you can do that to an array in JavaScript.  See the Queue class.
-	// 4.1 Remove any left-over spaces.
+	// 3. Take the first (zeroth) element and use that as the command.
+	// Only lowercase this command so we can keep the letter cases for when we pass
+	// the arguments to the shell functions
+	var cmd = tempList.shift().toLowerCase();
+	// 3.1 Remove any left-over spaces.
 	cmd = trim(cmd);
-	// 4.2 Record it in the return value.
+	// 3.2 Record it in the return value.
 	retVal.command = cmd;
 
-	// 5. Now create the args array from what's left.
+	// 4. Now create the args array from what's left.
 	for (var i in tempList)
 	{
 		var arg = trim(tempList[i]);
