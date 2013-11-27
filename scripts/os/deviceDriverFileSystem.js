@@ -388,6 +388,10 @@ DeviceDriverFileSystem.prototype.fileSystemReady = function() {
 				for (var block = 0; block < this.blocks; block++) {
 					var thisKey = this.makeKey(track, sector, block),
 						thisData = localStorage.getItem(thisKey);
+					if (thisData === null) {
+						// Something isn't properly initialized
+						return false;
+					}
 				}
 			}
 		}
