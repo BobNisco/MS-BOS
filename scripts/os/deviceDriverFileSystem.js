@@ -248,6 +248,14 @@ DeviceDriverFileSystem.prototype.deleteFile = function(name, deleteDirListing) {
 		result.message = 'The file system is not ready. Please format it and try again.';
 		return result;
 	}
+	if (name === 'MBR') {
+		if (_SarcasticMode) {
+			result.message = 'Are you ballsy or just plain stupid?';
+		} else {
+			result.message = 'Cannot delete the MBR';
+		}
+		return result;
+	}
 	// Find the directory with the given file name
 	var theDir = this.findDirByName(name);
 	if (theDir === -1) {
