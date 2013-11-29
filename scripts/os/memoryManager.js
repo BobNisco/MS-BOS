@@ -27,8 +27,22 @@ MemoryManager.prototype.loadProgram = function(program) {
 	// Determine which program location this going to go into
 	var programLocation = this.getOpenProgramLocation();
 	if (programLocation === null) {
-		_StdIn.putText("No available program locations in memory");
-		return null;
+		// Main memory is full, let's try to put it into the file system
+		var newProcessState = new ProcessState();
+		newProcessState.pcb = new Pcb();
+		var newFile = _FileSystem.createFile(newProcessState.processSwapName());
+		if (newFile.status === 'error') {
+			_StdIn.putText('No available program locations in memory nor in the file system');
+			return null;
+		}
+		var writeToFs = _FileSystem.writeFile(newProcessState.processSwapName(), program);
+		if (writeToFs.status === 'error') {
+			_StdIn.putText(writeToFs.message);
+			return null;
+		}
+		newProcessState.location = ProcessState.INFILESYSTEM;
+		_ResidentList[newProcessState.pcb.pid] = newProcessState;
+		return newProcessState.pcb.pid;
 	} else {
 		// Create a new PCB
 		var thisPcb = new Pcb();
@@ -45,6 +59,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 		// Make a new ProcessState instance and put it on the ResidentList
 		var newProcessState = new ProcessState();
 		newProcessState.pcb = thisPcb;
+		newProcessState.location = ProcessState.INMEMORY;
 		_ResidentList[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
 		this.loadProgramIntoMemory(program, programLocation);

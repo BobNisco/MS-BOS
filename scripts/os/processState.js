@@ -16,6 +16,8 @@ function ProcessState() {
 	this.pcb = null;
 	// Hold a program's current state
 	this.state = 0;
+	// Hold where the program currently resides
+	this.location = null;
 }
 
 // Define some constants for the possible states
@@ -24,6 +26,9 @@ ProcessState.READY = 1;
 ProcessState.RUNNING = 2;
 ProcessState.WAITING = 3;
 ProcessState.TERMINATED = 4;
+// Constants to determine where processes currently reside
+ProcessState.INMEMORY = 0;
+ProcessState.INFILESYSTEM = 1;
 
 ProcessState.prototype.printToScreen = function() {
 	var table = $('#readyQueueDisplay').find('table'),
@@ -54,21 +59,38 @@ ProcessState.prototype.createDisplayRow = function() {
 			'<td class="pcbyRegDisplay">' + this.pcb.yReg + '</td>' +
 			'<td class="pcbzRegDisplay">' + this.pcb.zFlag + '</td>' +
 			'<td class="pcbBaseDisplay">' + this.pcb.base + '</td>' +
-			'<td class="psbLimitDisplay">' + this.pcb.limit + '</td></tr>'
+			'<td class="psbLimitDisplay">' + this.pcb.limit + '</td>' +
+			'<td class="psbLocationDisplay">' + this.locationIntToString(this.location) + '</td></tr>'
 };
 
 ProcessState.prototype.stateIntToString = function(stateInt) {
 	var stateInt = parseInt(stateInt);
-	if (stateInt === 0) {
+	if (stateInt === ProcessState.NEW) {
 		return "New";
-	} else if (stateInt === 1) {
+	} else if (stateInt === ProcessState.READY) {
 		return "Ready";
-	} else if (stateInt === 2) {
+	} else if (stateInt === ProcessState.RUNNING) {
 		return "Running";
-	} else if (stateInt === 3) {
+	} else if (stateInt === ProcessState.WAITING) {
 		return "Waiting";
-	} else if (stateInt === 4) {
+	} else if (stateInt === ProcessState.TERMINATED) {
 		return "Terminated";
 	}
 	return "Invalid State Code";
+}
+
+ProcessState.prototype.locationIntToString = function(locationInt) {
+	var locationInt = parseInt(locationInt);
+	if (locationInt === ProcessState.INMEMORY) {
+		return "In Memory";
+	} else if (locationInt === ProcessState.INFILESYSTEM) {
+		return "In File System";
+	}
+	return "Invalid Location Code";
+}
+
+// The format for the swap name of a given process will simply be
+// swapX where X is the pid of the process.
+ProcessState.prototype.processSwapName = function() {
+	return 'swap' + this.pcb.pid;
 }
