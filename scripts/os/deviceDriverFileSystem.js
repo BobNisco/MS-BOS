@@ -72,8 +72,15 @@ DeviceDriverFileSystem.prototype.format = function() {
 			}
 		}
 	}
+	this.createMBR();
 	this.printToScreen();
 	return true;
+}
+
+DeviceDriverFileSystem.prototype.createMBR = function() {
+	var dirBlock = this.readData(this.makeKey(0, 0, 0));
+	// Write the MBR to the file system
+	var successfulWrite = this.handleWriteData(dirBlock, "MBR");
 }
 
 DeviceDriverFileSystem.prototype.makeKey = function(t, s, b) {
@@ -150,14 +157,27 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 		result.message = 'Could not find a file with the given name "' + name + '"';
 		return result;
 	}
-	var dirBlock = this.readData(theDir),
-		// Encode the whole string
-		encodedData = this.formatString(data),
-		// We will break the data up into a blocks before writing it
-		encodedDataBlocks = [];
+	var dirBlock = this.readData(theDir);
 	// Delete any blocks for this file
 	this.deleteFile(name, false);
-	// Split the data up into properly sized chunks.
+	// Write the data to the file system
+	var successfulWrite = this.handleWriteData(dirBlock, data);
+	if (!successfulWrite) {
+		result.status = 'error';
+		result.message = 'Not enough space on disk to write full file';
+		return result;
+	}
+	// Woohoo, update the display and return a success message, we did it!
+	this.printToScreen();
+	result.status = 'success';
+	result.message = 'Successfully wrote the file to disk';
+	return result;
+}
+
+DeviceDriverFileSystem.prototype.handleWriteData = function(dirBlock, data) {
+	var encodedData = this.formatString(data),
+		// We will break the data up into a blocks before writing it
+		encodedDataBlocks = [];
 	while (encodedData.length) {
 		// Chop the data up into blocks and pad it with zeroes, if needed
 		encodedDataBlocks.push(this.padDataString(
@@ -172,9 +192,7 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 		if (currentBlockToWriteTo === -1) {
 			// We ran out of space on our disk! This is bad, now we have a partially
 			// written file sitting on the disk. Blame the user.
-			result.status = 'error';
-			result.message = 'Not enough space on disk to write full file';
-			return result;
+			return false;
 		}
 		// Write this block of data to the filesystem
 		localStorage.setItem(currentBlockToWriteTo, ("1---" + encodedDataBlocks[i]));
@@ -189,11 +207,7 @@ DeviceDriverFileSystem.prototype.writeFile = function(name, data) {
 		lastBlock = currentBlockToWriteTo;
 		currentBlockToWriteTo = this.findNextAvailableFileEntry();
 	}
-	// Woohoo, update the display and return a success message, we did it!
-	this.printToScreen();
-	result.status = 'success';
-	result.message = 'Successfully wrote the file to disk';
-	return result;
+	return true;
 }
 
 DeviceDriverFileSystem.prototype.readFile = function(name) {
