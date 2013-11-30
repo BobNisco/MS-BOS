@@ -51,6 +51,20 @@ CpuScheduler.prototype.contextSwitch = function() {
 	// Check to see that there is another process in the ready queue
 	var nextProcess = _ReadyQueue.dequeue();
 	if (nextProcess !== null) {
+		console.log(nextProcess);
+		if (nextProcess.location === ProcessState.INFILESYSTEM &&
+			_MemoryManager.getOpenProgramLocation() === null) {
+			// We need to roll out a process in memory and into file system
+			var successfulRollOut = _MemoryManager.rollOut(_CurrentProgram);
+			if (!successfulRollOut) {
+
+			}
+			var successfulRollIn = _MemoryManager.rollIn(nextProcess);
+			if (!successfulRollIn) {
+
+			}
+		}
+
 		if (this.scheduler === this.schedulingOptions[0]) {
 			this.handleRoundRobinContextSwitch(nextProcess);
 		} else if (this.scheduler === this.schedulingOptions[1]) {

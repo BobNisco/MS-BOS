@@ -17,6 +17,8 @@ function MemoryManager() {
 	for (var i = 0; i < this.locations.length; i++) {
 		this.locations[i] = {
 			active: false,
+			base: i * PROGRAM_SIZE,
+			limit: (i + 1) * PROGRAM_SIZE,
 		};
 	}
 	// Print out the memory array to the screen
@@ -63,8 +65,6 @@ MemoryManager.prototype.loadProgram = function(program) {
 		_ResidentList[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
 		this.loadProgramIntoMemory(program, programLocation);
-		// Set this location as active
-		this.locations[programLocation].active = true;
 		// Return the pid
 		return thisPcb.pid;
 	}
@@ -80,6 +80,82 @@ MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	for (var i = 0; i < splitProgram.length; i++) {
 		this.memory.data[i + offsetLocation] = splitProgram[i].toUpperCase();
 	}
+	// Set this location as active
+	this.locations[location].active = true;
+}
+
+MemoryManager.prototype.rollOut = function(program) {
+	krnTrace('Rolling out PID ' + program.pcb.pid);
+	// 1. Create the file on disk
+	var createFile = _FileSystem.createFile(program.processSwapName());
+	if (createFile.status === 'error') {
+		return false;
+	}
+	// 2. Find the location that this program takes in memory
+	var locationInMemory = this.findLocationByBase(program.pcb.base);
+	if (locationInMemory === -1) {
+		return false;
+	}
+	// 3. Write the file to disk
+	console.log(program);
+	var writeFile = _FileSystem.writeFile(program.processSwapName(),
+			this.readProgramAtLocation(locationInMemory));
+	if (writeFile.status === 'error') {
+		return false;
+	}
+	// 4. Mark the location as inactive
+	this.locations[locationInMemory].active = false;
+	// 5. Update the process state to reflect the changes in base/limit
+	program.pcb.base = -1;
+	program.pcb.limit = -1;
+	program.location = ProcessState.INFILESYSTEM;
+	// 6. Update the view
+	this.printToScreen();
+	return true;
+}
+
+MemoryManager.prototype.rollIn = function(program) {
+	krnTrace('Rolling in PID ' + program.pcb.pid + ' from file system');
+	// 1. Ensure that there is a spot in memory to fit a program
+	var programLocation = this.getOpenProgramLocation();
+	if (programLocation === null) {
+		return false;
+	}
+	// 2. Read in the program from the file system
+	var fileFromDisk = _FileSystem.readFile(program.processSwapName());
+	if (fileFromDisk.status === 'error') {
+		return false;
+	}
+	// 3. Bring the program into memory
+	this.loadProgramIntoMemory(fileFromDisk.data, programLocation);
+	// 4. Remove the program from file system
+	var deleteFromDisk = _FileSystem.deleteFile(program.processSwapName(), true);
+	if (deleteFromDisk.status === 'error') {
+		return false;
+	}
+	// 5. Update the process state
+	program.pcb.base = this.locations[programLocation].base;
+	program.pcb.limit = this.locations[programLocation].limit;
+	program.location = ProcessState.INMEMORY;
+	// 6. Update the view
+	this.printToScreen();
+	return true;
+}
+
+MemoryManager.prototype.readProgramAtLocation = function(location) {
+	var program = "";
+	for (var i = this.locations[location].base; i < this.locations[location].limit; i++) {
+		program += this.memory[i] + " ";
+	}
+	return program;
+}
+
+MemoryManager.prototype.findLocationByBase = function(base) {
+	var location = parseInt(base / PROGRAM_SIZE);
+	if (location > this.locations.length) {
+		return -1;
+	}
+	return location;
 }
 
 // Finds the next open program location

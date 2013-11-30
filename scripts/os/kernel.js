@@ -107,8 +107,7 @@ function krnOnCPUClockPulse()
 function handleCpuClockPulse() {
 	// Since we need to handle multiple CPU schedulers, we will move the
 	// code to decide if we will context switch into the cpuScheduler itself.
-	var needToContextSwitch = _CpuScheduler.determineNeedToContextSwitch();
-	if (needToContextSwitch) {
+	if (_CpuScheduler.determineNeedToContextSwitch()) {
 		_CpuScheduler.contextSwitch();
 	}
 	_CPU.cycle();
