@@ -169,10 +169,9 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			_CpuScheduler.contextSwitch();
 			break;
 		case CPU_BREAK_IRQ:
-			// Stop the program
+			// Set the program state to terminated
 			_CurrentProgram.state = ProcessState.TERMINATED;
-			// Remove it from the resident list
-			_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
+			// Perform the context switch
 			_CpuScheduler.contextSwitch();
 			break;
 		case MEMORY_ACCESS_VIOLATION_IRQ:

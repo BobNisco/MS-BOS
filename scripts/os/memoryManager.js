@@ -74,7 +74,6 @@ MemoryManager.prototype.loadProgram = function(program) {
 MemoryManager.prototype.loadProgramIntoMemory = function(program, location) {
 	var splitProgram = program.split(' '),
 		offsetLocation = location * PROGRAM_SIZE;
-
 	this.clearProgramSection(location);
 
 	for (var i = 0; i < splitProgram.length; i++) {
@@ -97,7 +96,6 @@ MemoryManager.prototype.rollOut = function(program) {
 		return false;
 	}
 	// 3. Write the file to disk
-	console.log(program);
 	var writeFile = _FileSystem.writeFile(program.processSwapName(),
 			this.readProgramAtLocation(locationInMemory));
 	if (writeFile.status === 'error') {
@@ -145,17 +143,18 @@ MemoryManager.prototype.rollIn = function(program) {
 MemoryManager.prototype.readProgramAtLocation = function(location) {
 	var program = "";
 	for (var i = this.locations[location].base; i < this.locations[location].limit; i++) {
-		program += this.memory[i] + " ";
+		program += this.memory.data[i] + " ";
 	}
-	return program;
+	return $.trim(program);
 }
 
 MemoryManager.prototype.findLocationByBase = function(base) {
-	var location = parseInt(base / PROGRAM_SIZE);
-	if (location > this.locations.length) {
-		return -1;
+	for (var i = 0; i < this.locations.length; i++) {
+		if (this.locations[i].base === base) {
+			return i;
+		}
 	}
-	return location;
+	return -1;
 }
 
 // Finds the next open program location
@@ -221,20 +220,20 @@ MemoryManager.prototype.removeFromResidentList = function(pid) {
 	// Find the element in the ResidentList with the given pid
 	for (var i = 0; i < _ResidentList.length; i++) {
 		if (_ResidentList[i] && _ResidentList[i].pcb.pid === pid) {
-			var location = this.determineProgramSection(_ResidentList[i].pcb.base);
-			this.locations[location].active = false;
+			var location = this.findLocationByBase(_ResidentList[i].pcb.base);
+			if (location === -1) {
+				// Delete the process on the hard drive
+				_FileSystem.deleteFile(_ResidentList[i].processSwapName(), true);
+			} else {
+				// Mark the location in memory as available
+				this.locations[location].active = false;
+			}
 			// Remove it from the ResidentList
 			_ResidentList.splice(i, 1);
 			removed = true;
 		}
 	}
 	return removed;
-}
-
-// Given a base address, find which program section it belongs to.
-// Useful for dealing with residentList
-MemoryManager.prototype.determineProgramSection = function(base) {
-	return Math.floor(base / PROGRAM_SIZE);
 }
 
 // Function to print out all of the memory to the memory div
