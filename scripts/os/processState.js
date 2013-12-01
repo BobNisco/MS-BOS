@@ -18,6 +18,8 @@ function ProcessState() {
 	this.state = 0;
 	// Hold where the program currently resides
 	this.location = null;
+	// Hold the program's priority, only used in priority scheduling
+	this.priority = null;
 }
 
 // Define some constants for the possible states
@@ -60,7 +62,8 @@ ProcessState.prototype.createDisplayRow = function() {
 			'<td class="pcbzRegDisplay">' + this.pcb.zFlag + '</td>' +
 			'<td class="pcbBaseDisplay">' + this.pcb.base + '</td>' +
 			'<td class="psbLimitDisplay">' + this.pcb.limit + '</td>' +
-			'<td class="psbLocationDisplay">' + this.locationIntToString(this.location) + '</td></tr>'
+			'<td class="psbLocationDisplay">' + this.locationIntToString(this.location) + '</td>' +
+			'<td class="psbPriorityDisplay">' + this.priority + '</td></tr>';
 };
 
 ProcessState.prototype.stateIntToString = function(stateInt) {
@@ -77,7 +80,7 @@ ProcessState.prototype.stateIntToString = function(stateInt) {
 		return "Terminated";
 	}
 	return "Invalid State Code";
-}
+};
 
 ProcessState.prototype.locationIntToString = function(locationInt) {
 	var locationInt = parseInt(locationInt);
@@ -87,7 +90,15 @@ ProcessState.prototype.locationIntToString = function(locationInt) {
 		return "In File System";
 	}
 	return "Invalid Location Code";
-}
+};
+
+ProcessState.prototype.updatePcbWithCpu = function() {
+	this.pcb.pc = _CPU.PC;
+	this.pcb.acc = _CPU.Acc;
+	this.pcb.xReg = _CPU.Xreg;
+	this.pcb.yReg = _CPU.Yreg;
+	this.pcb.zFlag = _CPU.Zflag;
+};
 
 // The format for the swap name of a given process will simply be
 // swapX where X is the pid of the process.

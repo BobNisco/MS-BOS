@@ -25,7 +25,7 @@ function MemoryManager() {
 	this.printToScreen();
 }
 
-MemoryManager.prototype.loadProgram = function(program) {
+MemoryManager.prototype.loadProgram = function(program, priority) {
 	// Determine which program location this going to go into
 	var programLocation = this.getOpenProgramLocation();
 	if (programLocation === null) {
@@ -43,6 +43,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 			return null;
 		}
 		newProcessState.location = ProcessState.INFILESYSTEM;
+		newProcessState.priority = priority;
 		_ResidentList[newProcessState.pcb.pid] = newProcessState;
 		return newProcessState.pcb.pid;
 	} else {
@@ -62,6 +63,7 @@ MemoryManager.prototype.loadProgram = function(program) {
 		var newProcessState = new ProcessState();
 		newProcessState.pcb = thisPcb;
 		newProcessState.location = ProcessState.INMEMORY;
+		newProcessState.priority = priority;
 		_ResidentList[thisPcb.pid] = newProcessState;
 		// Actually load the program into memory
 		this.loadProgramIntoMemory(program, programLocation);

@@ -169,13 +169,17 @@ function shellInit() {
 	// load
 	sc = new ShellCommand();
 	sc.command = "load";
-	sc.description = "- Checks the User Program Input box for errors";
-	sc.function = function() {
+	sc.description = "[priority] - Loads the program in the user input box with optional priority parameter";
+	sc.function = function(args) {
 		var input = document.getElementById("taProgramInput").value;
 		if (input.match(/^[0-9A-F]/i)) {
 			_StdIn.putText("Loading program. Please be patient.");
 			_StdIn.advanceLine();
-			var thisPid = _MemoryManager.loadProgram(input);
+			var priority = null;
+			if (args.length >= 1) {
+				priority = args[0];
+			}
+			var thisPid = _MemoryManager.loadProgram(input, priority);
 			if (thisPid !== null) {
 				_StdIn.putText("PID: " + thisPid);
 			}
@@ -200,7 +204,7 @@ function shellInit() {
 		} else {
 			var requestedProgram = _ResidentList[args[0]];
 			if (requestedProgram.state !== ProcessState.TERMINATED) {
-				_ReadyQueue.enqueue(requestedProgram);
+				_ReadyQueue.push(requestedProgram);
 				_CpuScheduler.start();
 			}
 		}
@@ -281,7 +285,7 @@ function shellInit() {
 		for (var i = 0; i < _ResidentList.length; i++) {
 			var requestedProgram = _ResidentList[i];
 			if (requestedProgram && requestedProgram.state !== ProcessState.TERMINATED) {
-				_ReadyQueue.enqueue(_ResidentList[i]);
+				_ReadyQueue.push(_ResidentList[i]);
 				_ResidentList[i].printToScreen();
 			}
 		}
@@ -308,8 +312,8 @@ function shellInit() {
 	sc.description = " - Lists the running processes and their PIDs";
 	sc.function = function(args) {
 		var result = "";
-		for (var i = 0; i < _ReadyQueue.getSize(); i++) {
-			var theProcess = _ReadyQueue.q[i];
+		for (var i = 0; i < _ReadyQueue.length; i++) {
+			var theProcess = _ReadyQueue[i];
 			if (theProcess.state !== ProcessState.TERMINATED) {
 				result += ("PID: " + theProcess.pcb.pid + ", ");
 			}
@@ -345,16 +349,16 @@ function shellInit() {
 				_CpuScheduler.contextSwitch();
 			} else {
 				// Attempt to find the given PID in the ready queue
-				for (var i = 0; i < _ReadyQueue.getSize(); i++) {
-					if (_ReadyQueue.q[i].pcb.pid === givenPid) {
+				for (var i = 0; i < _ReadyQueue.length; i++) {
+					if (_ReadyQueue[i].pcb.pid === givenPid) {
 						// We have found it in the ready queue
-						foundProcess = _ReadyQueue.q[i];
+						foundProcess = _ReadyQueue[i];
 						// Set the state to terminated
-						_ReadyQueue.q[i].state = ProcessState.TERMINATED;
+						_ReadyQueue[i].state = ProcessState.TERMINATED;
 						// Update the display
-						_ReadyQueue.q[i].printToScreen();
+						_ReadyQueue[i].printToScreen();
 						// Remove it from the ReadyQueue completely
-						_ReadyQueue.q.splice(i, 1);
+						_ReadyQueue.splice(i, 1);
 						// Remove it from the resident list
 						_MemoryManager.removeFromResidentList(foundProcess.pcb.pid);
 						// Log this event

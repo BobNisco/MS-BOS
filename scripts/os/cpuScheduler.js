@@ -10,15 +10,15 @@
 ------------ */
 
 function CpuScheduler() {
-	this.schedulingOptions = ['rr', 'fcfs']
+	this.schedulingOptions = ['rr', 'fcfs', 'priority'];
 	this.scheduler = this.schedulingOptions[0];
 };
 
 CpuScheduler.prototype.start = function() {
-	if (_ReadyQueue.getSize() > 0) {
+	if (_ReadyQueue.length > 0) {
 		// Set mode bit to user mode
 		_Mode = 1;
-		_CurrentProgram = _ReadyQueue.dequeue();
+		_CurrentProgram = _ReadyQueue.shift();
 		// This program is now in the running state
 		_CurrentProgram.state = ProcessState.RUNNING;
 		// Initialize the CPU and set isExecuting to true only if
@@ -41,16 +41,22 @@ CpuScheduler.prototype.determineNeedToContextSwitch = function() {
 		if (_CurrentProgram.state === ProcessState.TERMINATED) {
 			return true;
 		}
+	} else if (this.scheduler === this.schedulingOptions[2]) {
+		// In the case of Priority, we will context switch once the currently
+		// running program has a state of terminated
+		if (_CurrentProgram.state === ProcessState.TERMINATED) {
+			return true;
+		}
 	}
-	// If no conditions are met, then we don't need to context switch!
+ 	// If no conditions are met, then we don't need to context switch!
 	return false;
 }
 
 // Does the switch between active processes
 CpuScheduler.prototype.contextSwitch = function() {
 	// Check to see that there is another process in the ready queue
-	var nextProcess = _ReadyQueue.dequeue();
-	if (nextProcess !== null) {
+	var nextProcess = this.determineNextProcess();
+	if (nextProcess !== null && nextProcess !== undefined) {
 		if (nextProcess.location === ProcessState.INFILESYSTEM &&
 			_MemoryManager.getOpenProgramLocation() === null) {
 			// We need to roll out a process in memory and into file system
@@ -67,6 +73,8 @@ CpuScheduler.prototype.contextSwitch = function() {
 			this.handleRoundRobinContextSwitch(nextProcess);
 		} else if (this.scheduler === this.schedulingOptions[1]) {
 			this.handleFCFSContextSwitch(nextProcess);
+		} else if (this.schedule === this.schedulingOptions[2]) {
+			this.handlePriorityContextSwitch(nextProcess);
 		} else {
 			// This should never happen since we define what our scheduler types are
 			// but we need to keep Murphy's Law in mind at all times.
@@ -82,18 +90,14 @@ CpuScheduler.prototype.contextSwitch = function() {
 CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 	krnTrace("Current cycle count > quantum of " + QUANTUM + ". Switching context.");
 	// Update the PCB for the currently executing program
-	_CurrentProgram.pcb.pc = _CPU.PC;
-	_CurrentProgram.pcb.acc = _CPU.Acc;
-	_CurrentProgram.pcb.xReg = _CPU.Xreg;
-	_CurrentProgram.pcb.yReg = _CPU.Yreg;
-	_CurrentProgram.pcb.zFlag = _CPU.Zflag;
+	_CurrentProgram.updatePcbWithCpu();
 	// If the currently executing program has a state of terminated,
 	// do not put it back on the queue
 	if (_CurrentProgram.state !== ProcessState.TERMINATED) {
 		// Process will be moved back into the queue, so set its state to waiting
 		_CurrentProgram.state = ProcessState.WAITING;
 		// Put the ProcessState back on the ready queue
-		_ReadyQueue.enqueue(_CurrentProgram);
+		_ReadyQueue.push(_CurrentProgram);
 	}
 	// Update the display
 	_CurrentProgram.printToScreen();
@@ -110,6 +114,30 @@ CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 CpuScheduler.prototype.handleFCFSContextSwitch = function(nextProcess) {
 	// FCFS is basically Round Robin anyway! Yay for code-reuse!
 	this.handleRoundRobinContextSwitch(nextProcess);
+};
+
+CpuScheduler.prototype.handlePriorityContextSwitch = function(nextProcess) {
+	// Update the PCB for the currently executing program
+	_CurrentProgram.updatePcbWithCpu();
+	// Update the display
+	_CurrentProgram.printToScreen();
+};
+
+CpuScheduler.prototype.determineNextProcess = function() {
+	if (this.scheduler === this.schedulingOptions[0] ||
+		this.scheduler === this.schedulingOptions[1]) {
+		// For fcfs or round robin, we just need to poll the next one off the queue
+		return _ReadyQueue.shift();
+	} else if (this.schedule === this.schedulingOptions[2]) {
+		// For priority, we need to find the process with the lowest priority
+		var lowestPriority = Infinity;
+		for (var i = 0; i < _ReadyQueue.length; i++) {
+			if (_ReadyQueue[i].priority < lowestPriority) {
+				//lowestPriority =
+			}
+		}
+	}
+	return null;
 };
 
 CpuScheduler.prototype.stop = function() {
