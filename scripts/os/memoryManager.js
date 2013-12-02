@@ -111,6 +111,7 @@ MemoryManager.prototype.rollOut = function(program) {
 	program.location = ProcessState.INFILESYSTEM;
 	// 6. Update the view
 	this.printToScreen();
+	program.printToScreen();
 	return true;
 }
 
@@ -139,6 +140,7 @@ MemoryManager.prototype.rollIn = function(program) {
 	program.location = ProcessState.INMEMORY;
 	// 6. Update the view
 	this.printToScreen();
+	program.printToScreen();
 	return true;
 }
 
