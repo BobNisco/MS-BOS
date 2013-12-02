@@ -57,18 +57,6 @@ CpuScheduler.prototype.contextSwitch = function() {
 	// Check to see that there is another process in the ready queue
 	var nextProcess = this.determineNextProcess();
 	if (nextProcess !== null && nextProcess !== undefined) {
-		if (nextProcess.location === ProcessState.INFILESYSTEM &&
-			_MemoryManager.getOpenProgramLocation() === null) {
-			// We need to roll out a process in memory and into file system
-			var successfulRollOut = _MemoryManager.rollOut(_CurrentProgram);
-			if (!successfulRollOut) {
-
-			}
-			var successfulRollIn = _MemoryManager.rollIn(nextProcess);
-			if (!successfulRollIn) {
-
-			}
-		}
 		if (this.scheduler === this.schedulingOptions[0]) {
 			this.handleRoundRobinContextSwitch(nextProcess);
 		} else if (this.scheduler === this.schedulingOptions[1]) {
@@ -87,6 +75,20 @@ CpuScheduler.prototype.contextSwitch = function() {
 	_CycleCounter = 0;
 };
 
+CpuScheduler.prototype.handleRollInRollOut = function(lastProcess) {
+	if (_CurrentProgram.location === ProcessState.INFILESYSTEM) {
+		// We need to roll out a process in memory and into file system
+		var successfulRollOut = _MemoryManager.rollOut(lastProcess);
+		if (!successfulRollOut) {
+			krnTrace('Error while rolling out PID ' + lastProcess.pcb.pid);
+		}
+		var successfulRollIn = _MemoryManager.rollIn(_CurrentProgram);
+		if (!successfulRollIn) {
+			krnTrace('Error while rolling in PID ' + _CurrentProgram.pcb.pid);
+		}
+	}
+};
+
 CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 	krnTrace("Current cycle count > quantum of " + QUANTUM + ". Switching context.");
 	// Update the PCB for the currently executing program
@@ -98,13 +100,18 @@ CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 		_CurrentProgram.state = ProcessState.WAITING;
 		// Put the ProcessState back on the ready queue
 		_ReadyQueue.push(_CurrentProgram);
+	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
+		_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 	}
 	// Update the display
 	_CurrentProgram.printToScreen();
+	// Get a reference to the "last process" which will be used for roll out/int
+	var lastProcess = _CurrentProgram;
 	// Set the CurrentProgram to the next process
 	_CurrentProgram = nextProcess;
 	// This program is now in the running state
 	_CurrentProgram.state = ProcessState.RUNNING;
+	this.handleRollInRollOut(lastProcess);
 	// Initialize the CPU and set isExecuting to true only if
 	// step is not currently enabled.
 	var shouldBeExecuting = !_StepEnabled;
@@ -141,10 +148,7 @@ CpuScheduler.prototype.determineNextProcess = function() {
 };
 
 CpuScheduler.prototype.stop = function() {
-	// If we do not need to switch processing to next program on ready queue,
-	// we'll determine if the currently executing program has a state of terminated.
-	// If so, we will halt the CPU as we know that there is nothing else on the
-	// ready queue, and our running process is terminated.
+	_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 	_CPU.isExecuting = false;
 	// Set the mode bit back to kernel mode, as the user processes are over
 	_Mode = 0;
