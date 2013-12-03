@@ -286,7 +286,7 @@ DeviceDriverFileSystem.prototype.deleteFile = function(name, deleteDirListing) {
 	}
 	this.printToScreen();
 	result.status = 'success';
-	result.message = 'Successfully deleted the file.';
+	result.message = 'Successfully deleted the file with name ' + name;
 	return result;
 }
 

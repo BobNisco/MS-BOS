@@ -77,10 +77,13 @@ CpuScheduler.prototype.contextSwitch = function() {
 
 CpuScheduler.prototype.handleRollInRollOut = function(lastProcess) {
 	if (_CurrentProgram.location === ProcessState.INFILESYSTEM) {
-		// We need to roll out a process in memory and into file system
-		var successfulRollOut = _MemoryManager.rollOut(lastProcess);
-		if (!successfulRollOut) {
-			krnTrace('Error while rolling out PID ' + lastProcess.pcb.pid);
+		// We need to roll out a process in memory and into file system,
+		// if it is not a terminated program
+		if (lastProcess.state !== ProcessState.TERMINATED) {
+			var successfulRollOut = _MemoryManager.rollOut(lastProcess);
+			if (!successfulRollOut) {
+				krnTrace('Error while rolling out PID ' + lastProcess.pcb.pid);
+			}
 		}
 		var successfulRollIn = _MemoryManager.rollIn(_CurrentProgram);
 		if (!successfulRollIn) {
