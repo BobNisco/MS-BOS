@@ -303,10 +303,9 @@ DeviceDriverFileSystem.prototype.readBlocks = function(key) {
 }
 
 DeviceDriverFileSystem.prototype.blockHasLink = function(metaData) {
-	for (var i = 1; i < this.metaDataSize; i++) {
-		if (metaData.charAt(i) !== "-") {
-			return true;
-		}
+	var link = metaData.substring(1, this.metaDataSize);
+	if (link !== "" && link !== "---") {
+		return true;
 	}
 	return false;
 }
