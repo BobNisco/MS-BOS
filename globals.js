@@ -12,7 +12,7 @@
 // Global CONSTANTS
 //
 var APP_NAME = "MS-BOS";
-var APP_VERSION = "0.03";
+var APP_VERSION = "1.0";
 
 var CPU_CLOCK_INTERVAL = 100;   // This is in ms, or milliseconds, so 1000 = 1 second.
 
