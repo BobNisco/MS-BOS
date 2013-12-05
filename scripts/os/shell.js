@@ -207,7 +207,8 @@ function shellInit() {
 			var requestedProgram = _ResidentList[args[0]];
 			if (requestedProgram.state !== ProcessState.TERMINATED) {
 				_ReadyQueue.push(requestedProgram);
-				_CpuScheduler.start();
+				requestedProgram.printToScreen();
+				_KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ));
 			}
 		}
 	};
@@ -291,7 +292,7 @@ function shellInit() {
 				_ResidentList[i].printToScreen();
 			}
 		}
-		_CpuScheduler.start();
+		_KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ));
 	};
 	this.commandList[this.commandList.length] = sc;
 

@@ -188,6 +188,15 @@ function krnInterruptHandler(irq, params)    // This is the Interrupt Handler Ro
 			// Context switch
 			_CpuScheduler.contextSwitch();
 			break;
+		case RUN_PROGRAM_IRQ:
+			if (_CPU.isExecuting) {
+				if (_CpuScheduler.determineNeedToContextSwitch()) {
+					_CpuScheduler.contextSwitch();
+				}
+			} else {
+				_CpuScheduler.start();
+			}
+			break;
 		default:
 			krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
 	}
