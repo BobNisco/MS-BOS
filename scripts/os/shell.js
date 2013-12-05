@@ -309,9 +309,9 @@ function shellInit() {
 	};
 	this.commandList[this.commandList.length] = sc;
 
-	// processes - list the running processes and their IDs
+	// ps - list the running processes and their IDs
 	sc = new ShellCommand();
-	sc.command = "processes";
+	sc.command = "ps";
 	sc.description = " - Lists the running processes and their PIDs";
 	sc.function = function(args) {
 		var result = "";
@@ -320,6 +320,9 @@ function shellInit() {
 			if (theProcess.state !== ProcessState.TERMINATED) {
 				result += ("PID: " + theProcess.pcb.pid + ", ");
 			}
+		}
+		if (_CurrentProgram !== null) {
+			result += ("PID: " + _CurrentProgram.pcb.pid);
 		}
 		if (result.length) {
 			_StdIn.putText(result);
