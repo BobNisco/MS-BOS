@@ -331,15 +331,17 @@ DeviceDriverFileSystem.prototype.readData = function(key) {
 			"meta" : "",
 			"data" : "",
 		};
-	// Read the first 4 bits and put that into the meta section
-	for (var i = 0; i < this.metaDataSize; i++) {
-		returnValue.meta += data.charAt(i);
-	}
-	// We need to read in sets of 2 hex digits at a time
-	for (var i = this.metaDataSize; i < data.length; i += 2) {
-		var ascii = parseInt(data.charAt(i) + data.charAt(i + 1), 16);
-		if (ascii !== 0) {
-			returnValue.data += String.fromCharCode(ascii);
+	if (data !== null) {
+		// Read the first 4 bits and put that into the meta section
+		for (var i = 0; i < this.metaDataSize; i++) {
+			returnValue.meta += data.charAt(i);
+		}
+		// We need to read in sets of 2 hex digits at a time
+		for (var i = this.metaDataSize; i < data.length; i += 2) {
+			var ascii = parseInt(data.charAt(i) + data.charAt(i + 1), 16);
+			if (ascii !== 0) {
+				returnValue.data += String.fromCharCode(ascii);
+			}
 		}
 	}
 	return returnValue;
