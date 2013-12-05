@@ -18,8 +18,9 @@ function ProcessState() {
 	this.state = 0;
 	// Hold where the program currently resides
 	this.location = null;
-	// Hold the program's priority, only used in priority scheduling
-	this.priority = null;
+	// Hold the program's priority, only used in priority scheduling,
+	// but a default value of 10 is given here
+	this.priority = ProcessState.DEFAULTPRIORITY;
 }
 
 // Define some constants for the possible states
@@ -31,6 +32,8 @@ ProcessState.TERMINATED = 4;
 // Constants to determine where processes currently reside
 ProcessState.INMEMORY = 0;
 ProcessState.INFILESYSTEM = 1;
+// A default priority value for processes
+ProcessState.DEFAULTPRIORITY = 10;
 
 ProcessState.prototype.printToScreen = function() {
 	var table = $('#readyQueueDisplay').find('table'),
@@ -104,4 +107,4 @@ ProcessState.prototype.updatePcbWithCpu = function() {
 // swapX where X is the pid of the process.
 ProcessState.prototype.processSwapName = function() {
 	return 'swap' + this.pcb.pid;
-}
+};

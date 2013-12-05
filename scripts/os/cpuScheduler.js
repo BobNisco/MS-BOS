@@ -18,7 +18,7 @@ CpuScheduler.prototype.start = function() {
 	if (_ReadyQueue.length > 0) {
 		// Set mode bit to user mode
 		_Mode = 1;
-		_CurrentProgram = _ReadyQueue.shift();
+		_CurrentProgram = this.determineNextProcess();
 		// This program is now in the running state
 		_CurrentProgram.state = ProcessState.RUNNING;
 		// Initialize the CPU and set isExecuting to true only if
@@ -61,13 +61,26 @@ CpuScheduler.prototype.contextSwitch = function() {
 			this.handleRoundRobinContextSwitch(nextProcess);
 		} else if (this.scheduler === this.schedulingOptions[1]) {
 			this.handleFCFSContextSwitch(nextProcess);
-		} else if (this.schedule === this.schedulingOptions[2]) {
+		} else if (this.scheduler === this.schedulingOptions[2]) {
 			this.handlePriorityContextSwitch(nextProcess);
 		} else {
 			// This should never happen since we define what our scheduler types are
 			// but we need to keep Murphy's Law in mind at all times.
 			krnTrace("Unknown CPU scheduler, u wot m8?");
 		}
+		// Update the display
+		_CurrentProgram.printToScreen();
+		// Get a reference to the "last process" which will be used for roll out/int
+		var lastProcess = _CurrentProgram;
+		// Set the CurrentProgram to the next process
+		_CurrentProgram = nextProcess;
+		// This program is now in the running state
+		_CurrentProgram.state = ProcessState.RUNNING;
+		this.handleRollInRollOut(lastProcess);
+		// Initialize the CPU and set isExecuting to true only if
+		// step is not currently enabled.
+		var shouldBeExecuting = !_StepEnabled;
+		_CPU.init(_CurrentProgram, shouldBeExecuting);
 	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
 		this.stop();
 	}
@@ -106,19 +119,6 @@ CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
 		_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 	}
-	// Update the display
-	_CurrentProgram.printToScreen();
-	// Get a reference to the "last process" which will be used for roll out/int
-	var lastProcess = _CurrentProgram;
-	// Set the CurrentProgram to the next process
-	_CurrentProgram = nextProcess;
-	// This program is now in the running state
-	_CurrentProgram.state = ProcessState.RUNNING;
-	this.handleRollInRollOut(lastProcess);
-	// Initialize the CPU and set isExecuting to true only if
-	// step is not currently enabled.
-	var shouldBeExecuting = !_StepEnabled;
-	_CPU.init(_CurrentProgram, shouldBeExecuting);
 };
 
 CpuScheduler.prototype.handleFCFSContextSwitch = function(nextProcess) {
@@ -129,8 +129,7 @@ CpuScheduler.prototype.handleFCFSContextSwitch = function(nextProcess) {
 CpuScheduler.prototype.handlePriorityContextSwitch = function(nextProcess) {
 	// Update the PCB for the currently executing program
 	_CurrentProgram.updatePcbWithCpu();
-	// Update the display
-	_CurrentProgram.printToScreen();
+	_MemoryManager.removeFromResidentList(_CurrentProgram.pcb.pid);
 };
 
 CpuScheduler.prototype.determineNextProcess = function() {
@@ -138,14 +137,20 @@ CpuScheduler.prototype.determineNextProcess = function() {
 		this.scheduler === this.schedulingOptions[1]) {
 		// For fcfs or round robin, we just need to poll the next one off the queue
 		return _ReadyQueue.shift();
-	} else if (this.schedule === this.schedulingOptions[2]) {
+	} else if (this.scheduler === this.schedulingOptions[2]) {
 		// For priority, we need to find the process with the lowest priority
-		var lowestPriority = Infinity;
+		var lowestPriority = Infinity,
+			lowestPriorityIndex = -1;
+		// Find the process with lowest priority
 		for (var i = 0; i < _ReadyQueue.length; i++) {
 			if (_ReadyQueue[i].priority < lowestPriority) {
-				//lowestPriority =
+				lowestPriority = _ReadyQueue[i].priority;
+				lowestPriorityIndex = i;
 			}
 		}
+		// Now that we found it, we need to take it out of the readyqueue
+		var nextProcess = _ReadyQueue.splice(lowestPriorityIndex, 1)[0];
+		return nextProcess;
 	}
 	return null;
 };

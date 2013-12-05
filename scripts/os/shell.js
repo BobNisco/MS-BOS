@@ -175,9 +175,11 @@ function shellInit() {
 		if (input.match(/^[0-9A-F]/i)) {
 			_StdIn.putText("Loading program. Please be patient.");
 			_StdIn.advanceLine();
-			var priority = null;
+			// Use the default priority
+			var priority = ProcessState.DEFAULTPRIORITY;
 			if (args.length >= 1) {
-				priority = args[0];
+				// If the priroity argument is passed, parse that and use it
+				priority = parseInt(args[0]);
 			}
 			var thisPid = _MemoryManager.loadProgram(input, priority);
 			if (thisPid !== null) {
