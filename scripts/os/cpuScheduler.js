@@ -113,7 +113,7 @@ CpuScheduler.prototype.handleRoundRobinContextSwitch = function(nextProcess) {
 	// do not put it back on the queue
 	if (_CurrentProgram.state !== ProcessState.TERMINATED) {
 		// Process will be moved back into the queue, so set its state to waiting
-		_CurrentProgram.state = ProcessState.WAITING;
+		_CurrentProgram.state = ProcessState.READY;
 		// Put the ProcessState back on the ready queue
 		_ReadyQueue.push(_CurrentProgram);
 	} else if (_CurrentProgram.state === ProcessState.TERMINATED) {
